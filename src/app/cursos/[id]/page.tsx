@@ -66,7 +66,8 @@ export default function DetalleCursoPage() {
   useEffect(() => {
     getGacetaEventos()
       .then(data => {
-        const found = data.cursos.find(c => c.iddetalle_cursos_academicos === id)
+        //const found = data.cursos.find(c => c.iddetalle_cursos_academicos === id)
+        const found = data.cursos.find((c: CursoType) => c.iddetalle_cursos_academicos === id)
         if (found) setItem(found)
         else setNotFound(true)
       })

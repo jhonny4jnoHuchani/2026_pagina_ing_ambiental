@@ -7,12 +7,13 @@ import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import HeroSkeleton from '../../Skeleton/Hero'
 import Link from 'next/link'
-import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react'
+import { motion, useScroll, useTransform, AnimatePresence, easeOut, type Variants } from 'motion/react'
 import { getContenido, getInstitucionPrincipal } from '@/services/ambientalService'
 import { PortadaType, InstitucionType } from '@/app/types/ambiental.types'
 
 // ── Variantes de animación mejoradas ──────────────────────────────────
-const containerVariants = {
+// ── Variantes de animación mejoradas ──────────────────────────────────
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -23,32 +24,38 @@ const containerVariants = {
   },
 }
 
-const fadeUpVariant = {
+const fadeUpVariant: Variants = {
   hidden: { opacity: 0, y: 50, filter: 'blur(8px)' },
   visible: {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+    },
   },
 }
 
-const fadeInVariant = {
+const fadeInVariant: Variants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.5, ease: 'easeOut' },
+    transition: { duration: 0.5, ease: easeOut },
   },
 }
 
-const slideRightVariant = {
+const slideRightVariant: Variants = {
   hidden: { opacity: 0, x: 80, rotateY: -15 },
   visible: {
     opacity: 1,
     x: 0,
     rotateY: 0,
-    transition: { duration: 0.7, ease: [0.34, 1.2, 0.64, 1] },
+    transition: {
+      duration: 0.7,
+      ease: [0.34, 1.2, 0.64, 1] as [number, number, number, number],
+    },
   },
 }
 
@@ -70,7 +77,7 @@ const WordByWord = ({ text, className, delayOffset = 0 }: { text: string; classN
                 rotateX: 0,
                 transition: {
                   duration: 0.5,
-                  ease: [0.33, 1, 0.68, 1],
+                  ease: [0.33, 1, 0.68, 1] as [number, number, number, number], // 👈 este cast
                   delay: delayOffset + wi * 0.06,
                 },
               },
@@ -198,7 +205,7 @@ const Hero = () => {
                 visible: {
                   scaleX: 1,
                   opacity: 1,
-                  transition: { duration: 0.7, ease: 'easeOut', delay: 0.3 },
+                  transition: { duration: 0.7, ease: easeOut, delay: 0.3 },
                 },
               }}
               className='w-20 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mt-4'

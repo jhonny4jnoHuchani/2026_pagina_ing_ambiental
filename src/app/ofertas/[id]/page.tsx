@@ -93,7 +93,7 @@ export default function DetalleOfertaPage() {
   useEffect(() => {
     getGacetaEventos()
       .then(data => {
-        const found = data.ofertasAcademicas.find(o => o.ofertas_id === id)
+        const found = data.ofertasAcademicas.find((o: OfertaAcademicaType) => o.ofertas_id === id)
         if (found) setItem(found)
         else setNotFound(true)
       })

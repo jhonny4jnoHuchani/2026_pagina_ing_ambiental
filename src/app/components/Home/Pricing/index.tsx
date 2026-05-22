@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
-import { Sparkles, Play, Volume2, VolumeX, Maximize, Eye, ChevronRight, Award, Leaf, Trees, Droplets, Sun } from 'lucide-react'
+import { Sparkles, Play, Volume2, VolumeX, Maximize, Eye, ChevronRight, Award, Leaf, Trees, Droplets, Sun, Pause } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { getInstitucionPrincipal } from '@/services/ambientalService'
 import { InstitucionType } from '@/app/types/ambiental.types'

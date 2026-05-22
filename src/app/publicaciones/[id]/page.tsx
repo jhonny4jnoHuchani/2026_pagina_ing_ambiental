@@ -68,7 +68,7 @@ export default function DetallePublicacionPage() {
   useEffect(() => {
     getRecursos()
       .then(data => {
-        const found = data.upea_publicaciones.find(p => p.publicaciones_id === id)
+        const found = data.upea_publicaciones.find((p: PublicacionType) => p.publicaciones_id === id)
         if (found) setItem(found)
         else setNotFound(true)
       })

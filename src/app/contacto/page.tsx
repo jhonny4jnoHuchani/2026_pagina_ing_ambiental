@@ -9,6 +9,7 @@ import { FaTelegram } from 'react-icons/fa6'
 import { MapPin, Phone, Mail, Clock, ExternalLink, Leaf, Wind, Droplets } from 'lucide-react'
 import { getInstitucionPrincipal, getContenido } from '@/services/ambientalService'
 import { InstitucionType, PortadaType } from '@/app/types/ambiental.types'
+import 'leaflet/dist/leaflet.css'
 
 // ── Leaflet dinámico (no SSR) ─────────────────────────────
 const MapContainer = dynamic(() => import('react-leaflet').then(m => m.MapContainer), { ssr: false })
@@ -173,18 +174,18 @@ export default function ContactoPage() {
   }, [])
 
   // Fix Leaflet icons + CSS
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const L = require('leaflet')
-    delete L.Icon.Default.prototype._getIconUrl
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-      iconUrl:       'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-      shadowUrl:     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-    })
-    import('leaflet/dist/leaflet.css').then(() => setLeafletReady(true))
-  }, [])
+useEffect(() => {
+  if (typeof window === 'undefined') return
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const L = require('leaflet')
+  delete L.Icon.Default.prototype._getIconUrl
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl:       'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl:     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  })
+  setLeafletReady(true) // 👈 directo, sin esperar el CSS
+}, [])
 
   // Geocodificación con caché
   useEffect(() => {

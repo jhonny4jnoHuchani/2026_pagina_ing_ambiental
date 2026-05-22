@@ -602,9 +602,8 @@ export default function AboutPage() {
                   className='relative bg-secondary dark:bg-darklight rounded-3xl p-10 shadow-sm border border-darkblue/10 dark:border-white/10 overflow-hidden group'
                 >
                   <motion.div
-                    style={{ x: mvX }}
+                    style={{ x: mvX , backgroundColor: primaryColor}}
                     className='absolute -bottom-12 -right-12 w-48 h-48 rounded-full opacity-10'
-                    style={{ backgroundColor: primaryColor }}
                   />
                   <motion.div
                     animate={{ rotate: 360 }}

@@ -47,7 +47,7 @@ const Project = () => {
     const fetchData = async () => {
       try {
         const data = await getRecursos()
-        setLinks(data.linksExternoInterno.filter((l) => l.estado === 1))
+        setLinks(data.linksExternoInterno.filter((l: LinkExternoType) => l.estado === 1))
       } catch (error) {
         console.error('Error fetching links:', error)
       } finally {

@@ -58,7 +58,7 @@ export default function DetalleServicioPage() {
   useEffect(() => {
     getGacetaEventos()
       .then(data => {
-        const found = data.serviciosCarrera.find(s => s.serv_id === id)
+        const found = data.serviciosCarrera.find((s: ServicioType) => s.serv_id === id)
         if (found) setItem(found)
         else setNotFound(true)
       })

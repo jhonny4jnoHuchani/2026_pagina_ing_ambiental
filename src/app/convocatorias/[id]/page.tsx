@@ -47,7 +47,7 @@ export default function DetalleConvocatoriaPage() {
   useEffect(() => {
     getGacetaEventos()
       .then(data => {
-        const found = data.convocatorias.find(c => c.idconvocatorias === id)
+        const found = data.convocatorias.find((c: ConvocatoriaType) => c.idconvocatorias === id)
         if (found) setItem(found)
         else setNotFound(true)
       })

@@ -48,7 +48,7 @@ export default function DetalleGacetaPage() {
   useEffect(() => {
     getGacetaEventos()
       .then(data => {
-        const found = data.upea_gaceta_universitaria.find(g => g.gaceta_id === id)
+        const found = data.upea_gaceta_universitaria.find((g: GacetaType) => g.gaceta_id === id)
         if (found) setItem(found)
         else setNotFound(true)
       })
