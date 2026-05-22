@@ -1,0 +1,297 @@
+'use client'
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
+import { motion } from 'motion/react'
+import {
+  ArrowLeft, FileText, Video, Play, // 🔥 CAMBIADO: Youtube → Video
+  AlertCircle, CheckCircle, Calendar,
+  Leaf, Wind, Droplets, Eye,
+} from 'lucide-react'
+import { getContenido } from '@/services/ambientalService'
+
+// ── Types ───────────────────────────────────────────────
+interface Video {
+  video_id: number
+  video_enlace: string
+  video_titulo: string
+  video_breve_descripcion: string
+  video_estado: number
+  video_tipo: string
+}
+
+// ── Helpers ─────────────────────────────────────────────
+const extractYouTubeId = (url: string) => {
+  if (!url) return null
+  const match = url.match(/(?:youtube\.com\/embed\/|youtu\.be\/|youtube\.com\/watch\?v=)([^&?#]+)/)
+  return match ? match[1] : null
+}
+
+const getYouTubeEmbedUrl = (url: string, autoplay: boolean = false) => {
+  const videoId = extractYouTubeId(url)
+  if (!videoId) return null
+  return `https://www.youtube.com/embed/${videoId}${autoplay ? '?autoplay=1' : ''}`
+}
+
+// ── Partícula decorativa ──────────────────────────────────
+const EnvParticle = ({
+  icon: Icon, x, y, delay, size = 20,
+}: {
+  icon: React.ElementType; x: string; y: string; delay: number; size?: number
+}) => (
+  <motion.div
+    className='absolute pointer-events-none z-0 text-primary opacity-5 dark:opacity-10'
+    style={{ left: x, top: y }}
+    animate={{ y: [0, -20, 0], rotate: [0, 10, -10, 0] }}
+    transition={{ duration: 6 + delay, delay, repeat: Infinity, ease: 'easeInOut' }}
+  >
+    <Icon size={size} />
+  </motion.div>
+)
+
+// ── SectionIn ─────────────────────────────────────────────
+const SectionIn = ({
+  children, delay = 0, className = '',
+}: {
+  children: React.ReactNode; delay?: number; className?: string
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-50px' }}
+    transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+)
+
+// ══════════════════════════════════════════════════════════
+export default function DetalleVideoPage() {
+  const params = useParams()
+  const id = Number(params.id)
+  const [item, setItem] = useState<Video | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
+
+  useEffect(() => {
+    getContenido()
+      .then(data => {
+        const found = data.upea_videos?.find((v: Video) => v.video_id === id)
+        if (found && found.video_estado === 1) setItem(found)
+        else setNotFound(true)
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [id])
+
+  // ── Loading ──
+  if (loading) {
+    return (
+      <div className='min-h-screen flex items-center justify-center bg-secondary dark:bg-darkmode'>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className='w-12 h-12 rounded-full border-4 border-primary border-t-transparent'
+        />
+      </div>
+    )
+  }
+
+  // ── Not found ──
+  if (notFound || !item) {
+    return (
+      <div className='min-h-screen flex items-center justify-center bg-secondary dark:bg-darkmode'>
+        <div className='text-center'>
+          <div className='w-20 h-20 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/30
+                          flex items-center justify-center'>
+            <AlertCircle size={40} className='text-red-500' />
+          </div>
+          <h2 className='text-2xl font-bold text-darkblue dark:text-white mb-2'>No encontrado</h2>
+          <p className='text-lightgrey mb-6'>El video que buscas no existe o no está disponible.</p>
+          <Link
+            href='/videos'
+            className='inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold
+                       bg-primary/10 text-primary border border-primary/20
+                       hover:bg-primary hover:text-white transition-all duration-300'
+          >
+            <ArrowLeft size={16} />
+            Volver a videos
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const embedUrl = getYouTubeEmbedUrl(item.video_enlace)
+
+  return (
+    <div className='min-h-screen bg-secondary dark:bg-darkmode overflow-x-hidden relative'>
+
+      {/* Partículas - CORREGIDO: Video en lugar de Youtube */}
+      <EnvParticle icon={Leaf}     x='3%'  y='10%' delay={0}   size={32} />
+      <EnvParticle icon={Wind}     x='88%' y='20%' delay={1}   size={28} />
+      <EnvParticle icon={Droplets} x='82%' y='65%' delay={2}   size={24} />
+      <EnvParticle icon={Video}    x='8%'  y='75%' delay={0.5} size={36} /> {/* 🔥 CORREGIDO */}
+
+      <div className='container relative z-10 py-12'>
+
+        {/* Botón volver */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+          className='mb-8'
+        >
+          <Link
+            href='/videos'
+            className='inline-flex items-center gap-2 text-sm font-medium text-primary
+                       hover:-translate-x-1 transition-all duration-300'
+          >
+            <ArrowLeft size={16} />
+            Volver a videos
+          </Link>
+        </motion.div>
+
+        {/* Grid principal */}
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12'>
+
+          {/* ── Col izquierda — Video ── */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <div className='sticky top-24'>
+              <div className='relative rounded-2xl overflow-hidden bg-black
+                              shadow-2xl border border-darkblue/10 dark:border-white/10'>
+                {embedUrl ? (
+                  <iframe
+                    src={embedUrl}
+                    title={item.video_titulo}
+                    className='w-full aspect-video'
+                    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className='w-full aspect-video flex flex-col items-center justify-center bg-primary/5'>
+                    <Video size={60} className='text-primary opacity-20' /> {/* 🔥 CORREGIDO */}
+                    <p className='text-lightgrey mt-4 text-sm'>No se pudo cargar el video</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Info adicional del video */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className='mt-4 p-4 rounded-2xl bg-white dark:bg-lightdarkblue
+                           border border-darkblue/10 dark:border-white/10 shadow-sm'
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10 shrink-0'>
+                    <Eye size={18} className='text-primary' />
+                  </div>
+                  <div>
+                    <p className='text-xs text-lightgrey'>Tipo de contenido</p>
+                    <p className='text-sm font-semibold text-darkblue dark:text-white'>
+                      {item.video_tipo === 'sin tipo' ? 'Video promocional' : item.video_tipo}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* ── Col derecha — Info ── */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className='space-y-6'
+          >
+            {/* Badges */}
+            <div className='flex flex-wrap items-center gap-2'>
+              <span className='inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5
+                               rounded-full text-white shadow-md bg-gradient-to-r from-red-600 to-red-800'>
+                <Video size={11} /> {/* 🔥 CORREGIDO */}
+                Video
+              </span>
+              {item.video_estado === 1 && (
+                <span className='inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5
+                                 rounded-full bg-emerald-500 text-white shadow-md'>
+                  <CheckCircle size={11} />
+                  DISPONIBLE
+                </span>
+              )}
+            </div>
+
+            {/* Título */}
+            <h1 className='text-2xl sm:text-3xl lg:text-4xl font-black text-darkblue dark:text-white leading-tight'>
+              {item.video_titulo}
+            </h1>
+
+            {/* Descripción */}
+            <SectionIn delay={0.1}>
+              <div className='p-5 rounded-2xl bg-white dark:bg-lightdarkblue
+                              border border-darkblue/10 dark:border-white/10 shadow-sm'>
+                <h3 className='flex items-center gap-2 text-base font-bold text-darkblue dark:text-white mb-4'>
+                  <div className='w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center'>
+                    <FileText size={16} className='text-primary' />
+                  </div>
+                  Descripción
+                </h3>
+                <div
+                  className='prose prose-sm dark:prose-invert max-w-none text-lightgrey leading-relaxed
+                             [&>p]:mb-3 [&>ul]:list-disc [&>ul]:pl-4 [&>li]:mb-1
+                             [&>strong]:text-primary [&>strong]:font-semibold'
+                  dangerouslySetInnerHTML={{ 
+                    __html: item.video_breve_descripcion || 'Sin descripción disponible.' 
+                  }}
+                />
+              </div>
+            </SectionIn>
+
+            {/* Enlace al video original */}
+            <SectionIn delay={0.2}>
+              <div className='p-4 rounded-2xl bg-white dark:bg-lightdarkblue
+                              border border-darkblue/10 dark:border-white/10 shadow-sm'>
+                <div className='flex items-center gap-3'>
+                  <div className='w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10 shrink-0'>
+                    <Play size={18} className='text-primary' />
+                  </div>
+                  <div>
+                    <p className='text-xs text-lightgrey'>Ver en YouTube</p>
+                    <Link
+                      href={item.video_enlace}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='text-sm font-semibold text-primary hover:underline break-all'
+                    >
+                      {item.video_enlace?.length > 50 
+                        ? item.video_enlace.substring(0, 50) + '...' 
+                        : item.video_enlace}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </SectionIn>
+
+            {/* Estado */}
+            <SectionIn delay={0.25}>
+              <div className='flex items-center gap-3'>
+                <Video size={14} className='text-primary' /> {/* 🔥 CORREGIDO */}
+                <span className='text-xs text-lightgrey'>
+                  Contenido multimedia — Ingeniería Ambiental UPEA
+                </span>
+              </div>
+            </SectionIn>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  )
+}
