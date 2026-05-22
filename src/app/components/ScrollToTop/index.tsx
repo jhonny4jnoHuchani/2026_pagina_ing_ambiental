@@ -24,7 +24,8 @@ export default function ScrollToTop() {
       }
     }
 
-    window.addEventListener('scroll', toggleVisibility)
+    // ✅ CORRECCIÓN DE RENDIMIENTO: Se añade { passive: true }
+    window.addEventListener('scroll', toggleVisibility, { passive: true })
 
     return () => window.removeEventListener('scroll', toggleVisibility)
   }, [])
@@ -32,17 +33,25 @@ export default function ScrollToTop() {
   return (
     <div className='fixed bottom-8 right-8 z-999'>
       <div className='flex items-center gap-2.5'>
-        <Link
-          href={'/'}
-          target='_blank'
-          className='bg-primary text-white hover:bg-primary/15 hover:text-primary text-sm font-medium px-4 py-3.5 leading-none rounded-lg text-nowrap'>
-          Download Now
-        </Link>
+
         {isVisible && (
           <div
             onClick={scrollToTop}
+            // ✅ CORRECCIÓN DE ACCESIBILIDAD 1: Se añade rol de botón
+            role='button'
+            // ✅ CORRECCIÓN DE ACCESIBILIDAD 2: Se añade manejador de teclado
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                scrollToTop()
+              }
+            }}
+            // ✅ ACCESIBILIDAD: Se añade tabIndex para que sea enfocable
+            tabIndex={0}
             aria-label='scroll to top'
-            className='back-to-top flex h-10 w-10 cursor-pointer items-center justify-center rounded-md bg-primary text-white shadow-md transition duration-300 ease-in-out hover:bg-dark'>
+            // ✅ ARQUITECTURA: Se reemplaza w-10 h-10 por size-10 (Tailwind 3.4+)
+            className='back-to-top flex size-10 cursor-pointer items-center justify-center rounded-md bg-primary text-white shadow-md transition duration-300 ease-in-out hover:bg-dark'
+          >
             <span className='mt-[6px] h-3 w-3 rotate-45 border-l border-t border-white'></span>
           </div>
         )}
