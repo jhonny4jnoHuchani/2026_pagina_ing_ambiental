@@ -14,24 +14,24 @@ const quickLinks = [
     links: [
       { label: 'Publicaciones', href: '/#publicaciones' },
       { label: 'Convocatorias', href: '/#convocatorias' },
-      { label: 'Cursos',        href: '/#cursos'        },
-      { label: 'Eventos',       href: '/#eventos'       },
+      { label: 'Cursos', href: '/#cursos' },
+      { label: 'Eventos', href: '/#eventos' },
     ],
   },
   {
     section: 'Recursos',
     links: [
       { label: 'Servicios', href: '/#servicios' },
-      { label: 'Gaceta',    href: '/#gaceta'    },
-      { label: 'Videos',    href: '/#videos'    },
-      { label: 'Ofertas',   href: '/#ofertas'   },
+      { label: 'Gaceta', href: '/#gaceta' },
+      { label: 'Videos', href: '/#videos' },
+      { label: 'Ofertas', href: '/#ofertas' },
     ],
   },
 ]
 
 const Footer = () => {
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
-  const [loading, setLoading]         = useState(true)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,8 +49,8 @@ const Footer = () => {
 
   const primaryColor = institucion?.colorinstitucion?.[0]?.color_primario ?? '#4F8D40'
 
-const hoverOn  = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLElement).style.color = primaryColor }
-const hoverOff = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLElement).style.color = '' }
+  const hoverOn = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLElement).style.color = primaryColor }
+  const hoverOff = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLElement).style.color = '' }
 
   return (
     <footer>
@@ -82,9 +82,9 @@ const hoverOff = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLEle
             <p className='text-darkblue dark:text-white text-lg font-medium'>Plataformas</p>
             <div className='flex items-center gap-3'>
               {[
-                { label: 'Inscripciones',  href: 'https://inscripcionesambiental.upea.bo/' },
-                { label: 'Campus Virtual', href: 'https://virtualambiental.upea.bo/'       },
-                { label: 'Página Web',     href: 'https://ambiental.upea.edu.bo/'          },
+                { label: 'Inscripciones', href: 'https://inscripcionesambiental.upea.bo/' },
+                { label: 'Campus Virtual', href: 'https://virtualambiental.upea.bo/' },
+                { label: 'Página Web', href: 'https://ambiental.upea.edu.bo/' },
               ].map((pl, i) => (
                 <a
                   key={i}
@@ -282,18 +282,35 @@ const hoverOff = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLEle
       </div>
 
       {/* ── Copyright ── */}
+      {/* ── Copyright ── */}
       <div className='py-3 border-t border-lightgrey/20'>
-        <p className='text-center text-sm text-lightgrey'>
-          © {new Date().getFullYear()} — Todos los derechos reservados{' '}
+        <p className='text-center text-sm text-lightgrey flex flex-wrap items-center justify-center gap-1'>
+          © Universidad Pública de El Alto {new Date().getFullYear()}
+          <span className='opacity-40'>|</span>
           <Link
             href='https://utic.upea.bo/'
             target='_blank'
+            rel='noreferrer'
             className='duration-300 font-medium'
             onMouseEnter={hoverOn}
             onMouseLeave={hoverOff}
           >
-            UTIC · Universidad Pública de El Alto
+            UTIC
           </Link>
+          <span className='opacity-40'>·</span>
+          <span>Web Developer:</span>
+          <Link
+            href='https://www.linkedin.com/in/jhonny-ajno-huchani-6545903a2/'
+            target='_blank'
+            rel='noreferrer'
+            className='duration-300 font-semibold'
+            onMouseEnter={hoverOn}
+            onMouseLeave={hoverOff}
+          >
+            JhonnyAH
+          </Link>
+          <span className='opacity-40'>·</span>
+          Todos los Derechos Reservados
         </p>
       </div>
     </footer>
