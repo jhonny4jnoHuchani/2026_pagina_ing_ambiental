@@ -88,7 +88,7 @@ export default function CategoriesExplorer({
     <div className='flex flex-col gap-2.5'>
       {categories.map((cat, index) => {
         const IconComponent = iconMap[cat.label]?.icon ?? Sparkles
-        const gradient = iconMap[cat.label]?.gradient ?? 'from-primary to-primary/60'
+        const gradient = iconMap[cat.label]?.gradient ?? 'from-emerald-500 to-teal-500'
         const popularity = getPopularityLevel(cat.count)
 
         return (

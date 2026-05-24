@@ -12,16 +12,16 @@ import CategoriesExplorer from '../Categories/CategoriesExplorer'
 import MisionVisionAcordion from '../Categories/MisionVisionAcordion'
 
 const Review = () => {
-  const [institucion, setInstitucion]       = useState<InstitucionType | null>(null)
-  const [convocatorias, setConvocatorias]   = useState<ConvocatoriaType[]>([])
-  const [cursos, setCursos]                 = useState<CursoType[]>([])
-  const [eventos, setEventos]               = useState<EventoType[]>([])
-  const [gaceta, setGaceta]                 = useState<GacetaType[]>([])
-  const [publicaciones, setPublicaciones]   = useState<PublicacionType[]>([])
-  const [servicios, setServicios]           = useState<ServicioType[]>([])
-  const [ofertas, setOfertas]               = useState<OfertaAcademicaType[]>([])
-  const [videos, setVideos]                 = useState<VideoType[]>([])
-  const [loading, setLoading]               = useState(true)
+  const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
+  const [convocatorias, setConvocatorias] = useState<ConvocatoriaType[]>([])
+  const [cursos, setCursos] = useState<CursoType[]>([])
+  const [eventos, setEventos] = useState<EventoType[]>([])
+  const [gaceta, setGaceta] = useState<GacetaType[]>([])
+  const [publicaciones, setPublicaciones] = useState<PublicacionType[]>([])
+  const [servicios, setServicios] = useState<ServicioType[]>([])
+  const [ofertas, setOfertas] = useState<OfertaAcademicaType[]>([])
+  const [videos, setVideos] = useState<VideoType[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,7 +58,10 @@ const Review = () => {
 
           {/* Categorías */}
           <div>
-            <p className='text-primary font-semibold text-sm uppercase tracking-widest mb-2'>
+            <p
+              className='font-semibold text-sm uppercase tracking-widest mb-2'
+              style={{ color: 'var(--color-primario)' }}
+            >
               Explorar contenido
             </p>
             <h2 className='text-3xl font-bold text-darkblue dark:text-white mb-8'>
@@ -79,7 +82,10 @@ const Review = () => {
 
           {/* Misión / Visión / Objetivos */}
           <div>
-            <p className='text-primary font-semibold text-sm uppercase tracking-widest mb-2'>
+            <p
+              className='font-semibold text-sm uppercase tracking-widest mb-2'
+              style={{ color: 'var(--color-primario)' }}
+            >
               Universidad Pública de El Alto
             </p>
             <h2 className='text-3xl font-bold text-darkblue dark:text-white mb-8'>

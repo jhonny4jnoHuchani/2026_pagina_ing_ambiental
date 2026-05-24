@@ -104,7 +104,7 @@ const ReviewData: ReviewType[] = [
     imgSrc: '/images/review/daniel.webp',
     name: 'Daniel Reid',
     rating: 4.2,
-    desc: 'Pixelize nailed our website redesign. Clean layout, fast loading, and mobile-friendly. Highly recommended!',
+    desc: ' nailed our website redesign. Clean layout, fast loading, and mobile-friendly. Highly recommended!',
   },
   {
     imgSrc: '/images/review/sophia.webp',

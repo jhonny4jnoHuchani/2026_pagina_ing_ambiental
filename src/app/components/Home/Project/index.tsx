@@ -28,7 +28,13 @@ const LinkCard = ({ item }: { item: LinkExternoType }) => (
         />
       </div>
       <div className='flex items-center gap-2'>
-        <span className='text-xs font-semibold text-primary uppercase tracking-wider px-2 py-0.5 bg-primary/10 rounded-full'>
+        <span
+          className='text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full'
+          style={{
+            color: 'var(--color-primario)',
+            backgroundColor: 'color-mix(in srgb, var(--color-primario) 10%, transparent)',
+          }}
+        >
           {item.tipo}
         </span>
       </div>
@@ -40,7 +46,7 @@ const LinkCard = ({ item }: { item: LinkExternoType }) => (
 )
 
 const Project = () => {
-  const [links, setLinks] = useState<LinkExternoType[]>([])
+  const [links, setLinks]   = useState<LinkExternoType[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

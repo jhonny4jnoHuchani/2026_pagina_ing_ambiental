@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { motion } from 'motion/react'
+import { useTheme } from 'next-themes'
 import { FaFacebook, FaYoutube, FaWhatsapp } from 'react-icons/fa'
 import { FaTelegram } from 'react-icons/fa6'
 import { MapPin, Phone, Mail, Clock, ExternalLink, Leaf, Wind, Droplets } from 'lucide-react'
@@ -11,13 +12,11 @@ import { getInstitucionPrincipal, getContenido } from '@/services/ambientalServi
 import { InstitucionType, PortadaType } from '@/app/types/ambiental.types'
 import 'leaflet/dist/leaflet.css'
 
-// ── Leaflet dinámico (no SSR) ─────────────────────────────
 const MapContainer = dynamic(() => import('react-leaflet').then(m => m.MapContainer), { ssr: false })
 const TileLayer    = dynamic(() => import('react-leaflet').then(m => m.TileLayer),    { ssr: false })
 const Marker       = dynamic(() => import('react-leaflet').then(m => m.Marker),       { ssr: false })
 const Popup        = dynamic(() => import('react-leaflet').then(m => m.Popup),        { ssr: false })
 
-// ── Caché coordenadas ─────────────────────────────────────
 const CACHE_TTL = 30 * 24 * 60 * 60 * 1000
 
 const getCachedCoords = (dir: string): [number, number] | null => {
@@ -38,7 +37,6 @@ const setCachedCoords = (dir: string, coords: [number, number]) => {
   } catch { /* no crítico */ }
 }
 
-// ── Helpers UI ────────────────────────────────────────────
 const Chip = ({ children, color }: { children: React.ReactNode; color: string }) => (
   <span
     className='inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full'
@@ -76,15 +74,24 @@ const EnvParticle = ({ icon: Icon, x, y, delay, size = 20, color }: {
   </motion.div>
 )
 
-// ── Link components (evita <a> dentro de JSX anidado) ─────
 const PhoneLink = ({ number }: { number: number }) => (
-  <Link href={`tel:${number}`} className='block hover:text-primary transition-colors'>
+  <Link
+    href={`tel:${number}`}
+    className='block transition-colors'
+    onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primario)')}
+    onMouseLeave={e => (e.currentTarget.style.color = '')}
+  >
     📱 {number}
   </Link>
 )
 
 const EmailLink = ({ email }: { email: string }) => (
-  <Link href={`mailto:${email}`} className='block hover:text-primary transition-colors break-all'>
+  <Link
+    href={`mailto:${email}`}
+    className='block break-all transition-colors'
+    onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primario)')}
+    onMouseLeave={e => (e.currentTarget.style.color = '')}
+  >
     {email}
   </Link>
 )
@@ -125,10 +132,9 @@ const MapsButton = ({ direccion, primaryColor }: { direccion: string; primaryCol
   </motion.div>
 )
 
-// ── ContactCard ───────────────────────────────────────────
-const ContactCard = ({ icon: Icon, title, content, color, delay = 0 }: {
+const ContactCard = ({ icon: Icon, title, content, color, delay = 0, cardBg }: {
   icon: React.ElementType; title: string
-  content: React.ReactNode; color: string; delay?: number
+  content: React.ReactNode; color: string; delay?: number; cardBg: string
 }) => (
   <motion.div
     initial={{ opacity: 0, y: 30 }}
@@ -136,7 +142,8 @@ const ContactCard = ({ icon: Icon, title, content, color, delay = 0 }: {
     viewport={{ once: true, margin: '-50px' }}
     transition={{ duration: 0.6, delay }}
     whileHover={{ y: -5, scale: 1.02 }}
-    className='bg-white dark:bg-lightdarkblue rounded-2xl p-6 shadow-lg border border-darkblue/10 dark:border-white/10 group hover:shadow-xl transition-all duration-300'
+    className='rounded-2xl p-6 shadow-lg border border-darkblue/10 dark:border-white/10 group hover:shadow-xl transition-all duration-300'
+    style={{ backgroundColor: cardBg }}
   >
     <div
       className='w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform'
@@ -149,20 +156,20 @@ const ContactCard = ({ icon: Icon, title, content, color, delay = 0 }: {
   </motion.div>
 )
 
-// ══════════════════════════════════════════════════════════
-// PÁGINA PRINCIPAL
-// ══════════════════════════════════════════════════════════
 export default function ContactoPage() {
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
   const [portadas, setPortadas]       = useState<PortadaType[]>([])
   const [loading, setLoading]         = useState(true)
+  const [mounted, setMounted]         = useState(false)
+  const { theme }                     = useTheme()
 
   const DEFAULT_COORDS: [number, number] = [-16.5009, -68.1503]
-  const [mapPosition, setMapPosition]   = useState<[number, number]>(DEFAULT_COORDS)
-  const [mapLoading, setMapLoading]     = useState(true)
+  const [mapPosition, setMapPosition] = useState<[number, number]>(DEFAULT_COORDS)
+  const [mapLoading, setMapLoading]   = useState(true)
   const [leafletReady, setLeafletReady] = useState(false)
 
-  // Fetch datos
+  useEffect(() => { setMounted(true) }, [])
+
   useEffect(() => {
     Promise.all([getInstitucionPrincipal(), getContenido()])
       .then(([principal, contenido]) => {
@@ -173,21 +180,19 @@ export default function ContactoPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  // Fix Leaflet icons + CSS
-useEffect(() => {
-  if (typeof window === 'undefined') return
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const L = require('leaflet')
-  delete L.Icon.Default.prototype._getIconUrl
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-    iconUrl:       'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-    shadowUrl:     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-  })
-  setLeafletReady(true) // 👈 directo, sin esperar el CSS
-}, [])
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const L = require('leaflet')
+    delete L.Icon.Default.prototype._getIconUrl
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+      iconUrl:       'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+      shadowUrl:     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    })
+    setLeafletReady(true)
+  }, [])
 
-  // Geocodificación con caché
   useEffect(() => {
     if (loading || !institucion) return
 
@@ -219,6 +224,8 @@ useEffect(() => {
 
   const primaryColor   = institucion?.colorinstitucion?.[0]?.color_primario   ?? '#4F8D40'
   const secondaryColor = institucion?.colorinstitucion?.[0]?.color_secundario ?? '#337a56'
+  const isDark         = mounted && theme === 'dark'
+  const cardBg         = isDark ? 'var(--color-header-dark)' : '#ffffff'
 
   if (loading) {
     return (
@@ -233,13 +240,12 @@ useEffect(() => {
     )
   }
 
-  const direccionFallback = institucion?.institucion_direccion
-    ?? 'Av. Sucre Z. Villa Esperanza El Alto'
+  const direccionFallback = institucion?.institucion_direccion ?? 'Av. Sucre Z. Villa Esperanza El Alto'
 
   return (
     <div className='min-h-screen bg-secondary dark:bg-darkmode overflow-x-hidden relative'>
 
-      {/* Partículas ambientales */}
+      {/* Partículas */}
       <EnvParticle icon={Leaf}     x='3%'  y='10%' delay={0}   size={32} color={primaryColor}   />
       <EnvParticle icon={Wind}     x='88%' y='20%' delay={1}   size={28} color={secondaryColor}  />
       <EnvParticle icon={Droplets} x='82%' y='65%' delay={2}   size={24} color={primaryColor}    />
@@ -247,9 +253,7 @@ useEffect(() => {
       <EnvParticle icon={Wind}     x='12%' y='40%' delay={1.5} size={20} color={primaryColor}    />
       <EnvParticle icon={Droplets} x='72%' y='45%' delay={3}   size={26} color={secondaryColor}  />
 
-      {/* ══════════════════════════════════════════════════════
-          HERO
-      ══════════════════════════════════════════════════════ */}
+      {/* HERO */}
       <section className='relative h-72 md:h-80 lg:h-96 w-full overflow-hidden'>
         {portadas[0]?.portada_imagen ? (
           <>
@@ -296,9 +300,7 @@ useEffect(() => {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          CARDS DE CONTACTO
-      ══════════════════════════════════════════════════════ */}
+      {/* CARDS DE CONTACTO */}
       <section className='relative py-24 overflow-hidden'>
         <div className='container'>
           <SectionIn className='text-center mb-12 space-y-3'>
@@ -314,16 +316,14 @@ useEffect(() => {
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
             {institucion?.institucion_direccion && (
               <ContactCard
-                icon={MapPin} title='Dirección' color={primaryColor} delay={0.1}
-                content={
-                  <p className='leading-relaxed'>{institucion.institucion_direccion}</p>
-                }
+                icon={MapPin} title='Dirección' color={primaryColor} delay={0.1} cardBg={cardBg}
+                content={<p className='leading-relaxed'>{institucion.institucion_direccion}</p>}
               />
             )}
 
             {(institucion?.institucion_celular1 || institucion?.institucion_celular2) && (
               <ContactCard
-                icon={Phone} title='Teléfonos' color={primaryColor} delay={0.2}
+                icon={Phone} title='Teléfonos' color={primaryColor} delay={0.2} cardBg={cardBg}
                 content={
                   <div className='space-y-1'>
                     {institucion?.institucion_celular1 && (
@@ -339,7 +339,7 @@ useEffect(() => {
 
             {(institucion?.institucion_correo1 || institucion?.institucion_correo2) && (
               <ContactCard
-                icon={Mail} title='Correos' color={primaryColor} delay={0.3}
+                icon={Mail} title='Correos' color={primaryColor} delay={0.3} cardBg={cardBg}
                 content={
                   <div className='space-y-1'>
                     {institucion?.institucion_correo1 && (
@@ -354,7 +354,7 @@ useEffect(() => {
             )}
 
             <ContactCard
-              icon={Clock} title='Horario de atención' color={primaryColor} delay={0.4}
+              icon={Clock} title='Horario de atención' color={primaryColor} delay={0.4} cardBg={cardBg}
               content={
                 <div className='space-y-2'>
                   <div>
@@ -373,11 +373,9 @@ useEffect(() => {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          REDES SOCIALES
-      ══════════════════════════════════════════════════════ */}
+      {/* REDES SOCIALES */}
       {(institucion?.institucion_facebook || institucion?.institucion_youtube || institucion?.institucion_twitter) && (
-        <section className='py-16 bg-white dark:bg-darklight relative overflow-hidden'>
+        <section className='py-16 relative overflow-hidden' style={{ backgroundColor: isDark ? 'var(--color-header-dark)' : '#ffffff' }}>
           <div className='container'>
             <SectionIn className='text-center mb-10 space-y-3'>
               <Chip color={primaryColor}>Síguenos</Chip>
@@ -387,35 +385,18 @@ useEffect(() => {
 
             <div className='flex flex-wrap items-center justify-center gap-4'>
               {institucion.institucion_facebook && (
-                <SocialButton
-                  href={institucion.institucion_facebook}
-                  bgColor='#1877f2'
-                  icon={FaFacebook}
-                  label='Facebook'
-                />
+                <SocialButton href={institucion.institucion_facebook} bgColor='#1877f2' icon={FaFacebook} label='Facebook' />
               )}
               {institucion.institucion_youtube && (
-                <SocialButton
-                  href={institucion.institucion_youtube}
-                  bgColor='#ff0000'
-                  icon={FaYoutube}
-                  label='YouTube'
-                />
+                <SocialButton href={institucion.institucion_youtube} bgColor='#ff0000' icon={FaYoutube} label='YouTube' />
               )}
               {institucion.institucion_twitter && (
-                <SocialButton
-                  href={institucion.institucion_twitter}
-                  bgColor={primaryColor}
-                  icon={FaTelegram}
-                  label='Telegram'
-                />
+                <SocialButton href={institucion.institucion_twitter} bgColor={primaryColor} icon={FaTelegram} label='Telegram' />
               )}
               {institucion.institucion_celular1 && (
                 <SocialButton
                   href={`https://wa.me/591${institucion.institucion_celular1}`}
-                  bgColor='#25D366'
-                  icon={FaWhatsapp}
-                  label='WhatsApp'
+                  bgColor='#25D366' icon={FaWhatsapp} label='WhatsApp'
                 />
               )}
             </div>
@@ -423,9 +404,7 @@ useEffect(() => {
         </section>
       )}
 
-      {/* ══════════════════════════════════════════════════════
-          MAPA
-      ══════════════════════════════════════════════════════ */}
+      {/* MAPA */}
       <section className='relative py-24 overflow-hidden'>
         <div className='container'>
           <SectionIn className='text-center mb-10 space-y-3'>
@@ -449,7 +428,7 @@ useEffect(() => {
                     style={{ borderColor: `${primaryColor} transparent transparent transparent` }}
                   />
                 </div>
-              ) : (
+              ) : typeof window !== 'undefined' && (
                 <MapContainer
                   center={mapPosition}
                   zoom={15}

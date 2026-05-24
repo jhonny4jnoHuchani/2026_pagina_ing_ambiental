@@ -8,7 +8,6 @@ import { Icon } from '@iconify/react'
 import { getInstitucionPrincipal } from '@/services/ambientalService'
 import { InstitucionType } from '@/app/types/ambiental.types'
 
-// Links rápidos de navegación (reemplaza FooterLinkData estático)
 const quickLinks = [
   {
     section: 'Carrera',
@@ -32,7 +31,7 @@ const quickLinks = [
 
 const Footer = () => {
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading]         = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,11 +47,16 @@ const Footer = () => {
     fetchData()
   }, [])
 
+  const primaryColor = institucion?.colorinstitucion?.[0]?.color_primario ?? '#4F8D40'
+
+const hoverOn  = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLElement).style.color = primaryColor }
+const hoverOff = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLElement).style.color = '' }
+
   return (
     <footer>
       <div className='container py-14'>
 
-        {/* ── Fila superior: Logo + Links plataformas ── */}
+        {/* ── Fila superior ── */}
         <div className='flex flex-col sm:flex-row sm:items-center justify-between mb-20 gap-5'>
 
           {/* Logo institucional */}
@@ -73,12 +77,9 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Links externos: Inscripciones, Campus Virtual, Web */}
-          {/* 🎨 COLOR DINÁMICO FUTURO: border-primary, bg-primary → colorinstitucion[0].color_primario */}
+          {/* Plataformas */}
           <div className='flex sm:flex-row flex-col sm:items-center gap-4'>
-            <p className='text-darkblue dark:text-white text-lg font-medium'>
-              Plataformas
-            </p>
+            <p className='text-darkblue dark:text-white text-lg font-medium'>Plataformas</p>
             <div className='flex items-center gap-3'>
               {[
                 { label: 'Inscripciones',  href: 'https://inscripcionesambiental.upea.bo/' },
@@ -90,8 +91,20 @@ const Footer = () => {
                   href={pl.href}
                   target='_blank'
                   rel='noreferrer'
-                  className='px-4 py-2 text-sm font-medium text-white border rounded-lg border-primary bg-primary
-                             hover:bg-transparent hover:text-primary duration-300'
+                  className='px-4 py-2 text-sm font-medium rounded-lg border duration-300'
+                  style={{
+                    color: '#ffffff',
+                    backgroundColor: primaryColor,
+                    borderColor: primaryColor,
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                    e.currentTarget.style.color = primaryColor
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.backgroundColor = primaryColor
+                    e.currentTarget.style.color = '#ffffff'
+                  }}
                 >
                   {pl.label}
                 </a>
@@ -105,8 +118,6 @@ const Footer = () => {
 
           {/* COLUMNA 1 — Redes sociales */}
           <div className='lg:col-span-4 sm:col-span-2 flex flex-col gap-5'>
-
-            {/* Universidad */}
             <div>
               <p className='text-darkblue dark:text-white text-xl font-semibold mb-1'>
                 {loading ? '...' : institucion?.institucion_nombre ?? 'Ingeniería Ambiental'}
@@ -114,8 +125,6 @@ const Footer = () => {
               <p className='text-lightgrey text-sm'>Universidad Pública de El Alto</p>
             </div>
 
-            {/* Redes sociales con iconos del template */}
-            {/* 🎨 COLOR DINÁMICO FUTURO: hover:text-primary → colorinstitucion[0].color_primario */}
             <div className='flex gap-4'>
               {institucion?.institucion_facebook && (
                 <Link href={institucion.institucion_facebook} target='_blank'>
@@ -123,8 +132,9 @@ const Footer = () => {
                     icon='tabler:brand-facebook'
                     width={45}
                     height={45}
-                    className='text-darkblue dark:text-white bg-darkmode/5 dark:bg-white/10 rounded-lg p-2
-                               hover:text-primary dark:hover:text-primary duration-300'
+                    className='text-darkblue dark:text-white bg-darkmode/5 dark:bg-white/10 rounded-lg p-2 duration-300'
+                    onMouseEnter={hoverOn}
+                    onMouseLeave={hoverOff}
                   />
                 </Link>
               )}
@@ -134,32 +144,34 @@ const Footer = () => {
                     icon='tabler:brand-youtube-filled'
                     width={45}
                     height={45}
-                    className='text-darkblue dark:text-white bg-darkmode/5 dark:bg-white/10 rounded-lg p-2
-                               hover:text-primary dark:hover:text-primary duration-300'
+                    className='text-darkblue dark:text-white bg-darkmode/5 dark:bg-white/10 rounded-lg p-2 duration-300'
+                    onMouseEnter={hoverOn}
+                    onMouseLeave={hoverOff}
                   />
                 </Link>
               )}
-              {/* institucion_twitter en realidad es Telegram */}
               {institucion?.institucion_twitter && (
                 <Link href={institucion.institucion_twitter} target='_blank'>
                   <Icon
                     icon='tabler:brand-telegram'
                     width={45}
                     height={45}
-                    className='text-darkblue dark:text-white bg-darkmode/5 dark:bg-white/10 rounded-lg p-2
-                               hover:text-primary dark:hover:text-primary duration-300'
+                    className='text-darkblue dark:text-white bg-darkmode/5 dark:bg-white/10 rounded-lg p-2 duration-300'
+                    onMouseEnter={hoverOn}
+                    onMouseLeave={hoverOff}
                   />
                 </Link>
               )}
             </div>
 
-            {/* Logo UTIC */}
             <motion.a
               href='https://utic.upea.bo/'
               target='_blank'
               rel='noreferrer'
               whileHover={{ opacity: 0.7 }}
-              className='inline-flex items-center gap-2 text-xs text-lightgrey hover:text-primary duration-300'
+              className='inline-flex items-center gap-2 text-xs text-lightgrey duration-300'
+              onMouseEnter={hoverOn}
+              onMouseLeave={hoverOff}
             >
               <Image
                 src='/logo/utic.png'
@@ -173,20 +185,19 @@ const Footer = () => {
           </div>
 
           {/* COLUMNA 2 — Links rápidos */}
-          {/* 🎨 COLOR DINÁMICO FUTURO: hover:text-primary → colorinstitucion[0].color_primario */}
           <div className='lg:col-span-4 col-span-1'>
             <div className='flex gap-20'>
               {quickLinks.map((group, i) => (
                 <div key={i} className='group relative col-span-2'>
-                  <p className='text-xl font-semibold mb-9'>
-                    {group.section}
-                  </p>
+                  <p className='text-xl font-semibold mb-9'>{group.section}</p>
                   <ul>
                     {group.links.map((item, j) => (
                       <li key={j} className='mb-3'>
                         <Link
                           href={item.href}
-                          className='text-darkblue/60 dark:text-white/60 hover:text-primary dark:hover:text-primary text-base font-normal'
+                          className='text-darkblue/60 dark:text-white/60 text-base font-normal duration-300'
+                          onMouseEnter={hoverOn}
+                          onMouseLeave={hoverOff}
                         >
                           {item.label}
                         </Link>
@@ -199,10 +210,8 @@ const Footer = () => {
           </div>
 
           {/* COLUMNA 3 — Contacto */}
-          {/* 🎨 COLOR DINÁMICO FUTURO: hover:text-primary → colorinstitucion[0].color_primario */}
           <div className='lg:col-span-4 col-span-1'>
 
-            {/* Dirección */}
             {institucion?.institucion_direccion && (
               <div className='flex gap-2'>
                 <Icon icon='tabler:map-pin' width={22} height={22} className='text-lightgrey shrink-0 mt-0.5' />
@@ -212,50 +221,58 @@ const Footer = () => {
               </div>
             )}
 
-            {/* Celular 1 */}
             {institucion?.institucion_celular1 ? (
               <div className='flex gap-2 mt-10'>
                 <Icon icon='tabler:phone' width={22} height={22} className='text-lightgrey shrink-0' />
-                <Link href={`tel:${institucion.institucion_celular1}`}>
-                  <p className='text-base font-normal text-darkblue/70 dark:text-white/70 hover:text-primary dark:hover:text-primary'>
-                    {institucion.institucion_celular1}
-                  </p>
+                <Link
+                  href={`tel:${institucion.institucion_celular1}`}
+                  className='text-base font-normal text-darkblue/70 dark:text-white/70 duration-300'
+                  onMouseEnter={hoverOn}
+                  onMouseLeave={hoverOff}
+                >
+                  {institucion.institucion_celular1}
                 </Link>
               </div>
             ) : null}
 
-            {/* Celular 2 */}
             {institucion?.institucion_celular2 ? (
               <div className='flex gap-2 mt-4'>
                 <Icon icon='tabler:phone' width={22} height={22} className='text-lightgrey shrink-0' />
-                <Link href={`tel:${institucion.institucion_celular2}`}>
-                  <p className='text-base font-normal text-darkblue/70 dark:text-white/70 hover:text-primary dark:hover:text-primary'>
-                    {institucion.institucion_celular2}
-                  </p>
+                <Link
+                  href={`tel:${institucion.institucion_celular2}`}
+                  className='text-base font-normal text-darkblue/70 dark:text-white/70 duration-300'
+                  onMouseEnter={hoverOn}
+                  onMouseLeave={hoverOff}
+                >
+                  {institucion.institucion_celular2}
                 </Link>
               </div>
             ) : null}
 
-            {/* Correo 1 */}
             {institucion?.institucion_correo1 && (
               <div className='flex gap-2 mt-10'>
                 <Icon icon='tabler:mail' width={22} height={22} className='text-lightgrey shrink-0' />
-                <Link href={`mailto:${institucion.institucion_correo1}`}>
-                  <p className='text-base font-normal text-darkblue/70 dark:text-white/70 hover:text-primary dark:hover:text-primary break-all'>
-                    {institucion.institucion_correo1}
-                  </p>
+                <Link
+                  href={`mailto:${institucion.institucion_correo1}`}
+                  className='text-base font-normal text-darkblue/70 dark:text-white/70 duration-300 break-all'
+                  onMouseEnter={hoverOn}
+                  onMouseLeave={hoverOff}
+                >
+                  {institucion.institucion_correo1}
                 </Link>
               </div>
             )}
 
-            {/* Correo 2 */}
             {institucion?.institucion_correo2 && (
               <div className='flex gap-2 mt-4'>
                 <Icon icon='tabler:mail' width={22} height={22} className='text-lightgrey shrink-0' />
-                <Link href={`mailto:${institucion.institucion_correo2}`}>
-                  <p className='text-base font-normal text-darkblue/70 dark:text-white/70 hover:text-primary dark:hover:text-primary break-all'>
-                    {institucion.institucion_correo2}
-                  </p>
+                <Link
+                  href={`mailto:${institucion.institucion_correo2}`}
+                  className='text-base font-normal text-darkblue/70 dark:text-white/70 duration-300 break-all'
+                  onMouseEnter={hoverOn}
+                  onMouseLeave={hoverOff}
+                >
+                  {institucion.institucion_correo2}
                 </Link>
               </div>
             )}
@@ -265,14 +282,15 @@ const Footer = () => {
       </div>
 
       {/* ── Copyright ── */}
-      {/* 🎨 COLOR DINÁMICO FUTURO: hover:text-primary → colorinstitucion[0].color_primario */}
       <div className='py-3 border-t border-lightgrey/20'>
         <p className='text-center text-sm text-lightgrey'>
           © {new Date().getFullYear()} — Todos los derechos reservados{' '}
           <Link
             href='https://utic.upea.bo/'
             target='_blank'
-            className='hover:text-primary dark:hover:text-primary duration-300 font-medium'
+            className='duration-300 font-medium'
+            onMouseEnter={hoverOn}
+            onMouseLeave={hoverOff}
           >
             UTIC · Universidad Pública de El Alto
           </Link>

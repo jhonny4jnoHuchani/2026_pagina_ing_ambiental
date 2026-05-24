@@ -4,13 +4,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
-import { ArrowRight, Calendar, Clock, Eye, Sparkles, Megaphone, FileText, Bell, GraduationCap, Users, CalendarDays } from 'lucide-react'
+import { ArrowRight, Calendar, Clock, Eye, Sparkles, Megaphone, FileText, Bell } from 'lucide-react'
 import { getGacetaEventos, getInstitucionPrincipal } from '@/services/ambientalService'
 import { ConvocatoriaType, CursoType, InstitucionType } from '@/app/types/ambiental.types'
 import SpecializeSkeleton from '../../Skeleton/Specialize'
 
-// ── Helpers ──────────────────────────────────────────────
-const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
 
 const formatFecha = (fecha: string) => {
   if (!fecha) return ''
@@ -32,32 +31,24 @@ const getRelativeTime = (fecha: string) => {
 const isNew = (fecha: string) =>
   new Date(fecha) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
 
-// ── Configuración fija de las 6 columnas ─────────────────
 const COLUMNAS = [
-  { label: 'Convocatorias', icon: Megaphone, gradient: 'from-rose-500 to-orange-500', href: '/#convocatorias' },
-  { label: 'Comunicados', icon: FileText, gradient: 'from-blue-500 to-indigo-500', href: '/#convocatorias' },
-  { label: 'Avisos', icon: Bell, gradient: 'from-amber-500 to-yellow-500', href: '/#convocatorias' },
+  { label: 'Convocatorias', icon: Megaphone, gradient: 'from-rose-500 to-orange-500',  href: '/#convocatorias' },
+  { label: 'Comunicados',   icon: FileText,  gradient: 'from-blue-500 to-indigo-500',  href: '/#convocatorias' },
+  { label: 'Avisos',        icon: Bell,      gradient: 'from-amber-500 to-yellow-500', href: '/#convocatorias' },
 ]
 
-// ── Card individual ───────────────────────────────────────
 interface CardItem {
-  id: number
-  titulo: string
-  imagen: string
-  fecha: string
-  descripcion: string
-  href: string
+  id: number; titulo: string; imagen: string
+  fecha: string; descripcion: string; href: string
 }
 
 const ItemCard = ({
-  col,
-  item,
-  primaryColor,
+  col, item,
 }: {
   col: typeof COLUMNAS[0]
   item: CardItem | null
-  primaryColor: string
 }) => {
+  const [hovered, setHovered] = useState(false)
   const Icon = col.icon
 
   return (
@@ -70,9 +61,11 @@ const ItemCard = ({
       <Link
         href={item ? item.href : col.href}
         className='group block bg-white dark:bg-lightdarkblue rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 h-full'
-        style={{ boxShadow: `0 10px 40px -15px ${primaryColor}30` }}
+        style={{ boxShadow: `0 10px 40px -15px color-mix(in srgb, var(--color-primario) 30%, transparent)` }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        {/* Imagen / placeholder */}
+        {/* Imagen */}
         <div className='relative h-44 overflow-hidden bg-gray-100 dark:bg-darklight'>
           {item?.imagen ? (
             <Image
@@ -82,17 +75,13 @@ const ItemCard = ({
               className='object-cover group-hover:scale-110 transition-transform duration-700'
             />
           ) : (
-            <div
-              className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${col.gradient} opacity-20`}
-            >
+            <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${col.gradient} opacity-20`}>
               <Icon size={48} className='text-white opacity-60' />
             </div>
           )}
 
-          {/* Overlay hover */}
           <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
 
-          {/* Badge categoría */}
           <div className='absolute top-3 left-3 flex gap-2 items-center'>
             <span className={`text-xs font-bold px-3 py-1.5 rounded-full shadow-lg bg-gradient-to-r ${col.gradient} text-white flex items-center gap-1`}>
               <Icon size={11} />
@@ -106,7 +95,6 @@ const ItemCard = ({
             )}
           </div>
 
-          {/* Ver detalles */}
           {item && (
             <div className='absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1'>
               <div className='flex items-center gap-1 text-white/80 text-[10px]'>
@@ -121,9 +109,16 @@ const ItemCard = ({
         <div className='p-4'>
           {item ? (
             <>
-              <h5 className='font-bold text-darkblue dark:text-white group-hover:text-primary transition-colors line-clamp-2 mb-3 text-sm'>
+              {/* Título con hover dinámico */}
+              <h5
+                className='font-bold transition-colors line-clamp-2 mb-3 text-sm'
+                style={{
+                  color: hovered ? 'var(--color-primario)' : undefined,
+                }}
+              >
                 {item.titulo}
               </h5>
+
               <div className='flex items-center justify-between gap-2 mb-3'>
                 <div className='flex items-center gap-1.5 text-xs text-lightgrey'>
                   <Calendar size={12} />
@@ -134,6 +129,7 @@ const ItemCard = ({
                   <span>{getRelativeTime(item.fecha)}</span>
                 </div>
               </div>
+
               {item.descripcion && (
                 <p className='text-xs text-lightgrey line-clamp-2 mb-3'>
                   {item.descripcion.replace(/<[^>]*>/g, '').substring(0, 90)}...
@@ -146,17 +142,18 @@ const ItemCard = ({
             </p>
           )}
 
-          {/* Footer card */}
+          {/* Footer */}
           <div className='flex items-center justify-between pt-2 border-t border-darkblue/10 dark:border-white/10'>
-            <span className='text-xs font-medium' style={{ color: primaryColor }}>
+            <span className='text-xs font-medium' style={{ color: 'var(--color-primario)' }}>
               {item ? 'Leer más' : 'Ver sección'}
             </span>
             <motion.div
               animate={{ x: [0, 5, 0] }}
               transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-              className='w-7 h-7 rounded-full flex items-center justify-center bg-primary/10'
+              className='w-7 h-7 rounded-full flex items-center justify-center'
+              style={{ backgroundColor: 'color-mix(in srgb, var(--color-primario) 10%, transparent)' }}
             >
-              <ArrowRight size={13} style={{ color: primaryColor }} />
+              <ArrowRight size={13} style={{ color: 'var(--color-primario)' }} />
             </motion.div>
           </div>
         </div>
@@ -173,12 +170,11 @@ const ItemCard = ({
   )
 }
 
-// ── Componente principal ──────────────────────────────────
 const Specialize = () => {
   const [convocatorias, setConvocatorias] = useState<ConvocatoriaType[]>([])
-  const [cursos, setCursos] = useState<CursoType[]>([])
-  const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [cursos, setCursos]               = useState<CursoType[]>([])
+  const [institucion, setInstitucion]     = useState<InstitucionType | null>(null)
+  const [loading, setLoading]             = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -199,59 +195,39 @@ const Specialize = () => {
     fetchData()
   }, [])
 
-  const primaryColor = institucion?.colorinstitucion?.[0]?.color_primario ?? '#4F8D40'
-
-  // ── Resuelve el último item activo por categoría ──────
   const getItem = (label: string): CardItem | null => {
     if (['Convocatorias', 'Comunicados', 'Avisos'].includes(label)) {
       const tipoMap: Record<string, string> = {
-        'Convocatorias': 'CONVOCATORIAS',
-        'Comunicados': 'COMUNICADOS',
-        'Avisos': 'AVISOS',
+        Convocatorias: 'CONVOCATORIAS',
+        Comunicados:   'COMUNICADOS',
+        Avisos:        'AVISOS',
       }
       const found = convocatorias
         .filter(c => c.con_estado === '1' && c.tipo_conv_comun?.tipo_conv_comun_titulo === tipoMap[label])
         .sort((a, b) => new Date(b.con_fecha_inicio).getTime() - new Date(a.con_fecha_inicio).getTime())
         .at(0)
-
       if (!found) return null
       return {
-        id: found.idconvocatorias,
-        titulo: found.con_titulo,
-        imagen: found.con_foto_portada,
-        fecha: found.con_fecha_inicio,
-        descripcion: found.con_descripcion,
-        href: '/#convocatorias',
+        id: found.idconvocatorias, titulo: found.con_titulo,
+        imagen: found.con_foto_portada, fecha: found.con_fecha_inicio,
+        descripcion: found.con_descripcion, href: '/#convocatorias',
       }
     }
-
     if (['Cursos', 'Seminarios'].includes(label)) {
-      const tipoMap: Record<string, string> = {
-        'Cursos': 'CURSOS',
-        'Seminarios': 'SEMINARIOS',
-      }
+      const tipoMap: Record<string, string> = { Cursos: 'CURSOS', Seminarios: 'SEMINARIOS' }
       const found = cursos
         .filter(c => c.det_estado === '1' && c.tipo_curso_otro?.tipo_conv_curso_nombre === tipoMap[label])
         .sort((a, b) => new Date(b.det_fecha_ini).getTime() - new Date(a.det_fecha_ini).getTime())
         .at(0)
-
       if (!found) return null
       return {
-        id: found.iddetalle_cursos_academicos,
-        titulo: found.det_titulo,
-        imagen: found.det_img_portada,
-        fecha: found.det_fecha_ini,
-        descripcion: found.det_descripcion,
-        href: '/#cursos',
+        id: found.iddetalle_cursos_academicos, titulo: found.det_titulo,
+        imagen: found.det_img_portada, fecha: found.det_fecha_ini,
+        descripcion: found.det_descripcion, href: '/#cursos',
       }
     }
-
     return null
   }
-
-
-
-
 
   return (
     <section id='expertise' className='scroll-mt-12'>
@@ -262,18 +238,12 @@ const Specialize = () => {
             Convocatorias de la carrera de {institucion?.institucion_nombre ?? 'Ingeniería Ambiental'}
           </p>
         </div>
-
         <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6'>
           {loading
             ? Array.from({ length: 3 }).map((_, i) => <SpecializeSkeleton key={i} />)
-            : COLUMNAS.map((col) => (
-              <ItemCard
-                key={col.label}
-                col={col}
-                item={getItem(col.label)}
-                primaryColor={primaryColor}
-              />
-            ))}
+            : COLUMNAS.map(col => (
+                <ItemCard key={col.label} col={col} item={getItem(col.label)} />
+              ))}
         </div>
       </div>
     </section>
