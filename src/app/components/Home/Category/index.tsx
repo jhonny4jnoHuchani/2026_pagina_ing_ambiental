@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react'
 import { Phone, User, Sparkles, ChevronRight, Quote, Star, Crown, Shield } from 'lucide-react'
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa'
 import { useTheme } from 'next-themes'
+import axios from 'axios'
 import { getContenido, getInstitucionPrincipal } from '@/services/ambientalService'
 import { AutoridadType, InstitucionType } from '@/app/types/ambiental.types'
 import CategorySkeleton from '../../Skeleton/Category'
@@ -25,21 +26,27 @@ const Category = () => {
   useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
     const fetchData = async () => {
       try {
         const [contenidoData, principalData] = await Promise.all([
-          getContenido(),
-          getInstitucionPrincipal(),
+          getContenido(source.token),
+          getInstitucionPrincipal(source.token),
         ])
         setAutoridades(contenidoData.autoridad)
         setInstitucion(principalData.Descripcion)
       } catch (error) {
-        console.error('Error fetching autoridades:', error)
+        if (!axios.isCancel(error)) {
+          console.error('Error fetching autoridades:', error)
+        }
       } finally {
         setLoading(false)
       }
     }
     fetchData()
+
+    return () => source.cancel('Category desmontado')
   }, [])
 
   const primaryColor   = institucion?.colorinstitucion?.[0]?.color_primario   ?? '#4F8D40'
@@ -69,7 +76,6 @@ const Category = () => {
       style={{ opacity }}
       className='relative py-16 lg:py-24 overflow-hidden scroll-mt-12'
     >
-      {/* Fondo dinámico */}
       <div
         className='absolute inset-0'
         style={{
@@ -79,7 +85,6 @@ const Category = () => {
         }}
       />
 
-      {/* Patrón de puntos */}
       <motion.div
         animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
         transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
@@ -90,7 +95,6 @@ const Category = () => {
         }}
       />
 
-      {/* Orbes flotantes */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
         <motion.div
           animate={{ x: [0, 150, 0], y: [0, 80, 0], scale: [1, 1.3, 1] }}
@@ -112,7 +116,6 @@ const Category = () => {
         />
       </div>
 
-      {/* Decoradores flotantes */}
       {floatingIcons.map((icon, idx) => (
         <motion.div
           key={idx}
@@ -127,7 +130,6 @@ const Category = () => {
 
       <div className='relative container mx-auto px-4 z-10'>
 
-        {/* Encabezado */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -199,7 +201,6 @@ const Category = () => {
           />
         </motion.div>
 
-        {/* Grid autoridades */}
         <motion.div
           className='grid lg:grid-cols-4 grid-cols-2 gap-6'
           style={{ y }}
@@ -230,7 +231,6 @@ const Category = () => {
                       : '0 10px 30px -15px rgba(0,0,0,0.1)',
                   }}
                 >
-                  {/* Foto */}
                   <div
                     className={`relative overflow-hidden ${i === 0 ? 'h-80 lg:h-96' : 'h-56'}`}
                     style={{ backgroundColor: isDark ? 'var(--color-header-dark)' : '#f3f4f6' }}
@@ -329,7 +329,6 @@ const Category = () => {
                       )}
                     </AnimatePresence>
 
-                    {/* Badge flotante */}
                     <motion.div
                       className='absolute top-3 right-3 backdrop-blur-sm rounded-full px-2 py-1 shadow-lg'
                       style={{
@@ -351,7 +350,6 @@ const Category = () => {
                     </motion.div>
                   </div>
 
-                  {/* Info visible siempre */}
                   <div
                     className='px-4 py-3'
                     style={{
@@ -374,7 +372,6 @@ const Category = () => {
                     </p>
                   </div>
 
-                  {/* Barra inferior */}
                   <motion.div
                     className='h-1'
                     style={gradientStyle}
@@ -383,7 +380,6 @@ const Category = () => {
                     transition={{ duration: 0.4 }}
                   />
 
-                  {/* Esquinas decorativas */}
                   <motion.div
                     className='absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 rounded-tl-2xl pointer-events-none'
                     style={{ borderColor: `${primaryColor}40` }}
@@ -403,7 +399,6 @@ const Category = () => {
                     transition={{ duration: 0.3 }}
                   />
 
-                  {/* Partículas hover */}
                   <AnimatePresence>
                     {hoveredId === aut.id_autoridad && (
                       <>

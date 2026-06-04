@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { ArrowRight, Calendar, Clock, Eye, Sparkles, Megaphone, FileText, Bell } from 'lucide-react'
+import axios from 'axios'
 import { getGacetaEventos, getInstitucionPrincipal } from '@/services/ambientalService'
 import { ConvocatoriaType, CursoType, InstitucionType } from '@/app/types/ambiental.types'
 import SpecializeSkeleton from '../../Skeleton/Specialize'
@@ -65,7 +66,6 @@ const ItemCard = ({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* Imagen */}
         <div className='relative h-44 overflow-hidden bg-gray-100 dark:bg-darklight'>
           {item?.imagen ? (
             <Image
@@ -105,11 +105,9 @@ const ItemCard = ({
           )}
         </div>
 
-        {/* Contenido */}
         <div className='p-4'>
           {item ? (
             <>
-              {/* Título con hover dinámico */}
               <h5
                 className='font-bold transition-colors line-clamp-2 mb-3 text-sm'
                 style={{
@@ -142,7 +140,6 @@ const ItemCard = ({
             </p>
           )}
 
-          {/* Footer */}
           <div className='flex items-center justify-between pt-2 border-t border-darkblue/10 dark:border-white/10'>
             <span className='text-xs font-medium' style={{ color: 'var(--color-primario)' }}>
               {item ? 'Leer más' : 'Ver sección'}
@@ -158,7 +155,6 @@ const ItemCard = ({
           </div>
         </div>
 
-        {/* Borde inferior animado */}
         <motion.div
           className={`h-1 bg-gradient-to-r ${col.gradient}`}
           initial={{ scaleX: 0 }}
@@ -177,22 +173,28 @@ const Specialize = () => {
   const [loading, setLoading]             = useState(true)
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
     const fetchData = async () => {
       try {
         const [gacetaData, principalData] = await Promise.all([
-          getGacetaEventos(),
-          getInstitucionPrincipal(),
+          getGacetaEventos(source.token),
+          getInstitucionPrincipal(source.token),
         ])
         setConvocatorias(gacetaData.convocatorias)
         setCursos(gacetaData.cursos)
         setInstitucion(principalData.Descripcion)
       } catch (error) {
-        console.error('Error fetching Specialize:', error)
+        if (!axios.isCancel(error)) {
+          console.error('Error fetching Specialize:', error)
+        }
       } finally {
         setLoading(false)
       }
     }
     fetchData()
+
+    return () => source.cancel('Specialize desmontado')
   }, [])
 
   const getItem = (label: string): CardItem | null => {

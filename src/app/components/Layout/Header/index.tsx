@@ -108,6 +108,12 @@ const Header: React.FC = () => {
   }, [])
 
   useEffect(() => {
+  const handleCloseMobileMenu = () => setMenuOpen(false)
+  window.addEventListener('closeMobileMenu', handleCloseMobileMenu)
+  return () => window.removeEventListener('closeMobileMenu', handleCloseMobileMenu)
+}, [])
+
+  useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
   }, [menuOpen])
 

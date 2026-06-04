@@ -1,4 +1,5 @@
 'use client'
+
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -9,89 +10,88 @@ import { NavLinkType } from '@/app/types/navlink'
 
 const MobileHeaderLink: React.FC<{ item: NavLinkType }> = ({ item }) => {
   const [submenuOpen, setSubmenuOpen] = useState(false)
-  const [mounted, setMounted]         = useState(false)
-  const { theme }                     = useTheme()
-  const path                          = usePathname()
-  const isActive                      = item.href === path
-  const isDark                        = mounted && theme === 'dark'
+  const [mounted, setMounted] = useState(false)
+  const { theme } = useTheme()
+  const path = usePathname()
+  const isActive = item.href === path
+  const isDark = mounted && theme === 'dark'
 
   useEffect(() => { setMounted(true) }, [])
 
+  // Determinar si el link actual o algún subitem está activo
+  const isParentActive = item.submenu?.some(sub => sub.href === path) || isActive
+
   return (
-    <div className='relative w-full'>
-      <div className='flex items-center justify-between w-full'>
+    <div className='w-full border-b border-gray-100 dark:border-gray-800 last:border-0'>
+      <div className='flex items-center justify-between w-full py-2'>
         <Link
           href={item.href}
-          className={`flex-1 py-2 nav-link nav-link-hover hover:cursor-pointer focus:outline-none transition-colors duration-200
-            ${isActive ? '!text-primary' : ''}`}
+          className={`flex-1 text-sm font-medium transition-colors duration-200
+            ${isParentActive ? 'text-primary' : 'text-gray-700 dark:text-gray-300'}`}
+          onClick={() => {
+            if (!item.submenu) {
+              // Cerrar menú solo si no tiene submenú
+              const closeEvent = new CustomEvent('closeMobileMenu')
+              window.dispatchEvent(closeEvent)
+            }
+          }}
         >
-          <motion.span
-            whileHover={{ x: 3 }}
-            transition={{ duration: 0.15 }}
-            className='flex items-center gap-2'
-          >
-            {isActive && (
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className='w-1.5 h-1.5 rounded-full flex-shrink-0'
-                style={{ backgroundColor: 'var(--color-primario)' }}
-              />
-            )}
-            {item.label}
-          </motion.span>
+          {item.label}
         </Link>
 
-        {item.submenu && (
+        {item.submenu && item.submenu.length > 0 && (
           <motion.button
-            onClick={() => setSubmenuOpen(!submenuOpen)}
+            onClick={(e) => {
+              e.stopPropagation()
+              setSubmenuOpen(!submenuOpen)
+            }}
             animate={{ rotate: submenuOpen ? 180 : 0 }}
-            transition={{ duration: 0.25 }}
-            className='p-1 nav-link nav-link-hover'
+            transition={{ duration: 0.2 }}
+            className='p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors'
+            aria-label={submenuOpen ? 'Cerrar submenú' : 'Abrir submenú'}
           >
-            <ChevronDown size={16} />
+            <ChevronDown size={16} className="text-gray-500 dark:text-gray-400" />
           </motion.button>
         )}
       </div>
 
       <AnimatePresence>
-        {submenuOpen && item.submenu && (
+        {submenuOpen && item.submenu && item.submenu.length > 0 && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-            className='overflow-hidden'
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
           >
-            <div
-              className='p-2 w-full rounded-lg mt-1'
-              style={{
-                backgroundColor: isDark
-                  ? 'var(--color-header-dark-scrolled)'
-                  : '#ffffff',
-              }}
-            >
-              {item.submenu.map((subItem, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
+            <div className="pl-4 pb-2 space-y-1">
+              {item.submenu.map((subItem, idx) => {
+                const isSubActive = subItem.href === path
+                return (
                   <Link
+                    key={idx}
                     href={subItem.href}
-                    className='flex items-center gap-2 py-2 px-2 rounded-lg nav-link nav-link-hover transition-all duration-150'
-                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? 'var(--color-header-dark)' : '#f5f5f5')}
-                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    className={`block py-2 px-3 text-sm rounded-lg transition-all duration-200
+                      ${isSubActive 
+                        ? 'bg-primary/10 text-primary font-medium' 
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
+                    onClick={() => {
+                      setSubmenuOpen(false)
+                      const closeEvent = new CustomEvent('closeMobileMenu')
+                      window.dispatchEvent(closeEvent)
+                    }}
                   >
-                    <span
-                      className='w-1 h-1 rounded-full flex-shrink-0'
-                      style={{ backgroundColor: 'var(--color-primario)', opacity: 0.5 }}
-                    />
-                    {subItem.label}
+                    <span className="flex items-center gap-2">
+                      <span 
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ backgroundColor: 'var(--color-primario)', opacity: isSubActive ? 1 : 0.4 }}
+                      />
+                      {subItem.label}
+                    </span>
                   </Link>
-                </motion.div>
-              ))}
+                )
+              })}
             </div>
           </motion.div>
         )}

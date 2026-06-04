@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { Icon } from '@iconify/react'
+import axios from 'axios' 
 import { getInstitucionPrincipal } from '@/services/ambientalService'
 import { InstitucionType } from '@/app/types/ambiental.types'
 
@@ -33,19 +34,26 @@ const Footer = () => {
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
   const [loading, setLoading] = useState(true)
 
+
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
     const fetchData = async () => {
       try {
-        const data = await getInstitucionPrincipal()
-        setInstitucion(data.Descripcion)
+        const data = await getInstitucionPrincipal(source.token);
+        setInstitucion(data.Descripcion);
       } catch (error) {
-        console.error('Error fetching footer data:', error)
+        if (!axios.isCancel(error)) {
+          console.error('Error fetching footer data:', error);
+        }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchData()
-  }, [])
+    };
+
+    fetchData();
+    return () => source.cancel('Footer desmontado');
+  }, []);
 
   const primaryColor = institucion?.colorinstitucion?.[0]?.color_primario ?? '#4F8D40'
 
@@ -281,7 +289,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* ── Copyright ── */}
       {/* ── Copyright ── */}
       <div className='py-3 border-t border-lightgrey/20'>
         <p className='text-center text-sm text-lightgrey flex flex-wrap items-center justify-center gap-1'>

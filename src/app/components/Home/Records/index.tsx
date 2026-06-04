@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 import { getContenido, getInstitucionPrincipal } from '@/services/ambientalService'
 import { UbicacionType, InstitucionType } from '@/app/types/ambiental.types'
 import RecordSkeleton from '../../Skeleton/Record'
@@ -11,21 +12,27 @@ const Ubicacion = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
     const fetchData = async () => {
       try {
         const [contenidoData, principalData] = await Promise.all([
-          getContenido(),
-          getInstitucionPrincipal(),
+          getContenido(source.token),
+          getInstitucionPrincipal(source.token),
         ])
         setUbicacion(contenidoData.ubicacion[0] ?? null)
         setInstitucion(principalData.Descripcion)
       } catch (error) {
-        console.error('Error fetching ubicacion:', error)
+        if (!axios.isCancel(error)) {
+          console.error('Error fetching ubicacion:', error)
+        }
       } finally {
         setLoading(false)
       }
     }
     fetchData()
+
+    return () => source.cancel('Ubicacion desmontado')
   }, [])
 
   return (

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import axios from 'axios' 
 import { getGacetaEventos, getInstitucionPrincipal } from '@/services/ambientalService'
 import {
   ConvocatoriaType, CursoType, EventoType, GacetaType,
@@ -24,12 +25,14 @@ const Review = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
     const fetchData = async () => {
       try {
         const [principalData, gacetaData, recursosData] = await Promise.all([
-          getInstitucionPrincipal(),
-          getGacetaEventos(),
-          getRecursos(),
+          getInstitucionPrincipal(source.token),
+          getGacetaEventos(source.token),
+          getRecursos(source.token),
         ])
         setInstitucion(principalData.Descripcion)
         setConvocatorias(gacetaData.convocatorias)
@@ -43,12 +46,16 @@ const Review = () => {
         // por ahora dejamos vacío hasta que lo conectes
         setVideos([])
       } catch (error) {
-        console.error('Error fetching Review data:', error)
+        if (!axios.isCancel(error)) {
+          console.error('Error fetching Review data:', error)
+        }
       } finally {
         setLoading(false)
       }
     }
     fetchData()
+
+    return () => source.cancel('Review desmontado')
   }, [])
 
   return (

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import { Sparkles, Play, Volume2, VolumeX, Maximize, Eye, ChevronRight, Award, Leaf, Trees, Droplets, Sun, Pause } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import axios from 'axios'
 import { getInstitucionPrincipal } from '@/services/ambientalService'
 import { InstitucionType } from '@/app/types/ambiental.types'
 
@@ -24,17 +25,23 @@ const Pricing = () => {
   }, [])
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
     const fetchData = async () => {
       try {
-        const data = await getInstitucionPrincipal()
+        const data = await getInstitucionPrincipal(source.token)
         setInstitucion(data.Descripcion)
       } catch (error) {
-        console.error('Error fetching VideoVision:', error)
+        if (!axios.isCancel(error)) {
+          console.error('Error fetching VideoVision:', error)
+        }
       } finally {
         setLoading(false)
       }
     }
     fetchData()
+
+    return () => source.cancel('Pricing desmontado')
   }, [])
 
   const currentTheme = mounted ? (theme === 'system' ? systemTheme : theme) : 'light'
@@ -77,17 +84,14 @@ const Pricing = () => {
       style={{ opacity, scale }}
       className='relative py-12 sm:py-16 lg:py-20 overflow-hidden scroll-mt-12'
     >
-      {/* ─── FONDO PRINCIPAL CON SOPORTE CLARO/OSCURO ───────────────────────── */}
       <div className={`absolute inset-0 transition-colors duration-300 ${
         isDark 
           ? 'bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950' 
           : 'bg-gradient-to-br from-gray-50 via-white to-gray-100'
       }`} />
       
-      {/* Efecto de textura / ruido */}
       <div className='absolute inset-0 opacity-[0.03] pointer-events-none bg-[url("data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)"/%3E%3C/svg%3E")]' />
 
-      {/* ─── ORBES FLOTANTES CON COLORES INSTITUCIONALES ─────────────────────── */}
       <div className='absolute inset-0 overflow-hidden'>
         <motion.div
           animate={{ x: [0, 120, 0], y: [0, 60, 0], scale: [1, 1.3, 1] }}
@@ -109,7 +113,6 @@ const Pricing = () => {
         />
       </div>
 
-      {/* ─── PATRÓN DE PUNTOS DECORATIVO ────────────────────────────────────── */}
       <div
         className={`absolute inset-0 ${isDark ? 'opacity-10' : 'opacity-5'}`}
         style={{
@@ -118,18 +121,15 @@ const Pricing = () => {
         }}
       />
 
-      {/* ─── ONDAS DECORATIVAS EN LA PARTE INFERIOR ─────────────────────────── */}
       <svg className='absolute bottom-0 left-0 w-full h-24 opacity-10 pointer-events-none' preserveAspectRatio='none' viewBox='0 0 1440 120'>
         <path fill={primaryColor} d='M0,64L48,58.7C96,53,192,43,288,48C384,53,480,75,576,80C672,85,768,75,864,69.3C960,64,1056,64,1152,69.3C1248,75,1344,85,1392,90.7L1440,96L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z' />
       </svg>
 
-      {/* Línea superior decorativa */}
       <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/20' : 'via-gray-300'} to-transparent`} />
 
       <div className='relative container mx-auto px-4'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center'>
           
-          {/* ─── COLUMNA IZQUIERDA: TEXTO ────────────────────────────────────── */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -137,7 +137,6 @@ const Pricing = () => {
             viewport={{ once: true }}
             className='space-y-6'
           >
-            {/* Badge decorativo animado */}
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
@@ -161,7 +160,6 @@ const Pricing = () => {
               <div className='w-1.5 h-1.5 rounded-full animate-pulse' style={{ backgroundColor: primaryColor }} />
             </motion.div>
 
-            {/* Título principal */}
             <div className='space-y-3'>
               <h2 className='text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight'>
                 <span className={isDark ? 'text-white' : 'text-gray-900'}>Video Visión de la</span>
@@ -189,7 +187,6 @@ const Pricing = () => {
                 </span>
               </h2>
 
-              {/* Línea decorativa */}
               <motion.div
                 className='h-0.5 rounded-full'
                 style={{ background: `linear-gradient(90deg, ${primaryColor}, transparent)` }}
@@ -200,7 +197,6 @@ const Pricing = () => {
               />
             </div>
 
-            {/* Nombre institución */}
             <motion.h3
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -211,7 +207,6 @@ const Pricing = () => {
               {institucion?.institucion_nombre ?? 'Ingeniería Ambiental'}
             </motion.h3>
 
-            {/* Descripción */}
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -223,9 +218,6 @@ const Pricing = () => {
               con el medio ambiente y el desarrollo sostenible de Bolivia.
             </motion.p>
 
-
-
-            {/* Botones de acción */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -262,7 +254,6 @@ const Pricing = () => {
             </motion.div>
           </motion.div>
 
-          {/* ─── COLUMNA DERECHA: VIDEO CON EFECTOS ──────────────────────────── */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -273,7 +264,6 @@ const Pricing = () => {
             onMouseLeave={() => setShowControls(false)}
           >
             <div className='relative group'>
-              {/* Efecto de brillo exterior */}
               <motion.div
                 className='absolute -inset-3 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl'
                 style={{ background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})` }}
@@ -281,7 +271,6 @@ const Pricing = () => {
                 transition={{ duration: 2, repeat: Infinity }}
               />
 
-              {/* Marco decorativo */}
               <div className='absolute -top-3 -left-3 w-12 h-12 pointer-events-none'>
                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
                   <path d="M0 0 L48 0 M0 0 L0 48" stroke={primaryColor} strokeWidth="2" strokeDasharray="3 3" />
@@ -293,7 +282,6 @@ const Pricing = () => {
                 </svg>
               </div>
 
-              {/* Contenedor del video */}
               <div className={`relative rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm border ${
                 isDark 
                   ? 'bg-black/50 border-white/20' 
@@ -309,10 +297,8 @@ const Pricing = () => {
                     style={{ border: 0 }}
                   />
                   
-                  {/* Overlay de gradiente en el video */}
                   <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none' />
                   
-                  {/* Controles flotantes del video */}
                   <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
                     <div className='flex items-center gap-3'>
                       <button 
@@ -338,7 +324,6 @@ const Pricing = () => {
                 </div>
               </div>
 
-              {/* Badge flotante de vistas */}
               <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -355,7 +340,6 @@ const Pricing = () => {
               </motion.div>
             </div>
 
-            {/* Indicador de scroll */}
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
@@ -368,7 +352,6 @@ const Pricing = () => {
         </div>
       </div>
 
-      {/* Línea inferior decorativa */}
       <div className={`absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-gray-300'} to-transparent`} />
     </motion.section>
   )

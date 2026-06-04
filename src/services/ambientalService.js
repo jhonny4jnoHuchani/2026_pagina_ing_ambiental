@@ -1,3 +1,4 @@
+import axios from 'axios'; 
 import axiosInstance from "./axiosConfig";
 
 /**
@@ -16,28 +17,34 @@ const ID = process.env.NEXT_PUBLIC_ID_INSTITUCION;
 // GET /institucionesPrincipal/:id
 // Retorna: descripción, misión, visión, objetivos, colores, redes
 // ============================================================
-export const getInstitucionPrincipal = async () => {
-  const response = await axiosInstance.get(`institucionesPrincipal/${ID}`);
+export const getInstitucionPrincipal = async (cancelToken) => {
+  const response = await axiosInstance.get(`institucionesPrincipal/${ID}`, {
+    cancelToken: cancelToken
+  });
   return response.data;
 };
+
 
 // ============================================================
 // ENDPOINT 2: Contenido de la institución
 // GET /institucion/:id/contenido
 // Retorna: autoridad, portada, ubicación, videos
 // ============================================================
-export const getContenido = async () => {
-  const response = await axiosInstance.get(`institucion/${ID}/contenido`);
+export const getContenido = async (cancelToken) => {
+  const response = await axiosInstance.get(`institucion/${ID}/contenido`, {
+    cancelToken: cancelToken
+  });
   return response.data;
 };
-
 // ============================================================
 // ENDPOINT 3: Recursos de la institución
 // GET /institucion/:id/recursos
 // Retorna: publicaciones, links externos, links internos
 // ============================================================
-export const getRecursos = async () => {
-  const response = await axiosInstance.get(`institucion/${ID}/recursos`);
+export const getRecursos = async (cancelToken ) => {
+  const response = await axiosInstance.get(`institucion/${ID}/recursos`, {
+    cancelToken: cancelToken
+  });
   return response.data;
 };
 
@@ -46,8 +53,10 @@ export const getRecursos = async () => {
 // GET /institucion/:id/gacetaEventos
 // Retorna: gaceta, eventos, cursos, convocatorias, servicios, ofertas
 // ============================================================
-export const getGacetaEventos = async () => {
-  const response = await axiosInstance.get(`institucion/${ID}/gacetaEventos`);
+export const getGacetaEventos = async (cancelToken) => {
+  const response = await axiosInstance.get(`institucion/${ID}/gacetaEventos`, {
+    cancelToken: cancelToken
+  });
   return response.data;
 };
 
@@ -55,12 +64,12 @@ export const getGacetaEventos = async () => {
 // CARGA COMPLETA: todos los endpoints en paralelo
 // Útil para el HomeView donde se necesitan todos los datos
 // ============================================================
-export const getAllData = async () => {
+export const getAllData = async (cancelToken) => {
   const [principal, contenido, recursos, gacetaEventos] = await Promise.all([
-    getInstitucionPrincipal(),
-    getContenido(),
-    getRecursos(),
-    getGacetaEventos(),
+    getInstitucionPrincipal(cancelToken),
+    getContenido(cancelToken),
+    getRecursos(cancelToken),
+    getGacetaEventos(cancelToken),
   ]);
 
   return { principal, contenido, recursos, gacetaEventos };

@@ -8,6 +8,7 @@ import {
   ArrowRight, Calendar, MapPin, Sparkles,
   ChevronRight, Zap, CalendarDays, PlayCircle
 } from 'lucide-react'
+import axios from 'axios'
 import { getGacetaEventos, getInstitucionPrincipal } from '@/services/ambientalService'
 import { CursoType, InstitucionType } from '@/app/types/ambiental.types'
 
@@ -43,21 +44,27 @@ const ContactForm = () => {
   const [hoveredCurso, setHoveredCurso] = useState<number | null>(null)
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
     const fetchData = async () => {
       try {
         const [gacetaData, principalData] = await Promise.all([
-          getGacetaEventos(),
-          getInstitucionPrincipal(),
+          getGacetaEventos(source.token),
+          getInstitucionPrincipal(source.token),
         ])
         setCursos(gacetaData.cursos)
         setInstitucion(principalData.Descripcion)
       } catch (error) {
-        console.error('Error fetching cursos:', error)
+        if (!axios.isCancel(error)) {
+          console.error('Error fetching cursos:', error)
+        }
       } finally {
         setLoading(false)
       }
     }
     fetchData()
+
+    return () => source.cancel('ContactForm desmontado')
   }, [])
 
   const primaryColor   = institucion?.colorinstitucion?.[0]?.color_primario   ?? '#4F8D40'
@@ -96,7 +103,6 @@ const ContactForm = () => {
     <section id='contact' className='scroll-mt-12 relative py-10 sm:py-12 lg:py-16 overflow-hidden bg-secondary dark:bg-darklight'>
       <div className='container'>
 
-        {/* Encabezado */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -121,7 +127,6 @@ const ContactForm = () => {
           </p>
         </motion.div>
 
-        {/* Cards */}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6'>
           {items.map((item, index) => {
             const status     = getCursoStatus(item.det_fecha_ini, item.det_fecha_fin)
@@ -143,7 +148,6 @@ const ContactForm = () => {
                   href='/#cursos'
                   className='group block bg-white dark:bg-lightdarkblue rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-darkblue/10 dark:border-white/10'
                 >
-                  {/* Imagen */}
                   <div className='relative h-48 sm:h-52 overflow-hidden bg-gray-100 dark:bg-darklight'>
                     {item.det_img_portada ? (
                       <Image
@@ -189,9 +193,7 @@ const ContactForm = () => {
                     )}
                   </div>
 
-                  {/* Contenido */}
                   <div className='p-4'>
-                    {/* Título con hover dinámico */}
                     <h5
                       className='font-bold text-sm sm:text-base mb-3 line-clamp-2 transition-colors'
                       style={{
@@ -235,7 +237,6 @@ const ContactForm = () => {
                       )}
                     </div>
 
-                    {/* Footer */}
                     <div className='flex items-center justify-end pt-2 border-t border-darkblue/10 dark:border-white/10'>
                       <motion.div
                         whileHover={{ x: 3 }}
@@ -251,7 +252,6 @@ const ContactForm = () => {
                     </div>
                   </div>
 
-                  {/* Barra inferior */}
                   <motion.div
                     className='h-0.5 w-0 group-hover:w-full transition-all duration-500'
                     style={gradientStyle}
@@ -262,7 +262,6 @@ const ContactForm = () => {
           })}
         </div>
 
-        {/* Ver todos */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

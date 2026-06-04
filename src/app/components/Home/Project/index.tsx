@@ -6,6 +6,7 @@ import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import { useEffect, useState } from 'react'
+import axios from 'axios'  // ← AGREGAR ESTA LÍNEA
 import ProjectSkeleton from '../../Skeleton/Project'
 import { getRecursos } from '@/services/ambientalService'
 import { LinkExternoType } from '@/app/types/ambiental.types'
@@ -49,18 +50,25 @@ const Project = () => {
   const [links, setLinks]   = useState<LinkExternoType[]>([])
   const [loading, setLoading] = useState(true)
 
+  // ✅ useEffect CORREGIDO con cancelación
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
     const fetchData = async () => {
       try {
-        const data = await getRecursos()
+        const data = await getRecursos(source.token);
         setLinks(data.linksExternoInterno.filter((l: LinkExternoType) => l.estado === 1))
       } catch (error) {
-        console.error('Error fetching links:', error)
+        if (!axios.isCancel(error)) {
+          console.error('Error fetching links:', error);
+        }
       } finally {
         setLoading(false)
       }
     }
     fetchData()
+
+    return () => source.cancel('Project desmontado')
   }, [])
 
   const settings = {

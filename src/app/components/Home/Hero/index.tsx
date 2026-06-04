@@ -1,5 +1,5 @@
 'use client'
-
+import axios from 'axios'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import Slider from 'react-slick'
@@ -87,26 +87,26 @@ const ActionButton = ({
         style={
           isPrimary
             ? {
-                color: '#ffffff',
-                backgroundColor: 'var(--color-primario)',
-                boxShadow: '0 4px 15px color-mix(in srgb, var(--color-primario) 30%, transparent)',
-              }
+              color: '#ffffff',
+              backgroundColor: 'var(--color-primario)',
+              boxShadow: '0 4px 15px color-mix(in srgb, var(--color-primario) 30%, transparent)',
+            }
             : {
-                color: 'var(--color-primario)',
-                backgroundColor: 'transparent',
-                border: '2px solid var(--color-primario)',
-              }
+              color: 'var(--color-primario)',
+              backgroundColor: 'transparent',
+              border: '2px solid var(--color-primario)',
+            }
         }
         onMouseEnter={e => {
           if (!isPrimary) {
             (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--color-primario)'
-            ;(e.currentTarget as HTMLButtonElement).style.color = '#ffffff'
+              ; (e.currentTarget as HTMLButtonElement).style.color = '#ffffff'
           }
         }}
         onMouseLeave={e => {
           if (!isPrimary) {
             (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'
-            ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--color-primario)'
+              ; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-primario)'
           }
         }}
       >
@@ -118,32 +118,39 @@ const ActionButton = ({
 
 // ── Componente principal ──────────────────────────────────────────────
 const Hero = () => {
-  const [portadas, setPortadas]     = useState<PortadaType[]>([])
+  const [portadas, setPortadas] = useState<PortadaType[]>([])
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
-  const [loading, setLoading]       = useState(true)
+  const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
 
-  const { scrollY }      = useScroll()
-  const yParallax        = useTransform(scrollY, [0, 500], [0, -80])
-  const opacityParallax  = useTransform(scrollY, [0, 300], [1, 0.5])
+  const { scrollY } = useScroll()
+  const yParallax = useTransform(scrollY, [0, 500], [0, -80])
+  const opacityParallax = useTransform(scrollY, [0, 300], [1, 0.5])
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
     const fetchData = async () => {
       try {
         const [contenidoData, principalData] = await Promise.all([
-          getContenido(),
-          getInstitucionPrincipal(),
-        ])
-        setPortadas(contenidoData.portada)
-        setInstitucion(principalData.Descripcion)
+          getContenido(source.token),        // ← Sin "as any"
+          getInstitucionPrincipal(source.token),  // ← Sin "as any"
+        ]);
+
+        setPortadas(contenidoData.portada);
+        setInstitucion(principalData.Descripcion);
       } catch (error) {
-        console.error('Error fetching Hero data:', error)
+        if (!axios.isCancel(error)) {
+          console.error('Error fetching Hero data:', error);
+        }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchData()
-  }, [])
+    };
+
+    fetchData();
+    return () => source.cancel('Componente desmontado');
+  }, []);
 
   const sliderSettings = {
     dots: true,
@@ -372,33 +379,33 @@ const Hero = () => {
                   {loading
                     ? Array.from({ length: 3 }).map((_, i) => <HeroSkeleton key={i} />)
                     : portadas.map((item, idx) => (
-                        <div key={item.portada_id} className='relative aspect-[4/3]'>
-                          <Image
-                            src={item.portada_imagen}
-                            alt={item.portada_titulo}
-                            fill
-                            className='object-cover transition-transform duration-700 group-hover:scale-105'
-                            priority={idx === 0}
-                          />
-                          <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent' />
-                          <AnimatePresence>
-                            <motion.div
-                              className='absolute bottom-0 left-0 right-0 px-5 py-4'
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.3 }}
-                            >
-                              <p className='text-white text-sm font-medium tracking-wide'>
-                                {item.portada_titulo}
-                              </p>
-                              <div
-                                className='w-12 h-0.5 rounded-full mt-2'
-                                style={{ backgroundColor: 'color-mix(in srgb, var(--color-primario) 70%, transparent)' }}
-                              />
-                            </motion.div>
-                          </AnimatePresence>
-                        </div>
-                      ))}
+                      <div key={item.portada_id} className='relative aspect-[4/3]'>
+                        <Image
+                          src={item.portada_imagen}
+                          alt={item.portada_titulo}
+                          fill
+                          className='object-cover transition-transform duration-700 group-hover:scale-105'
+                          priority={idx === 0}
+                        />
+                        <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent' />
+                        <AnimatePresence>
+                          <motion.div
+                            className='absolute bottom-0 left-0 right-0 px-5 py-4'
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            <p className='text-white text-sm font-medium tracking-wide'>
+                              {item.portada_titulo}
+                            </p>
+                            <div
+                              className='w-12 h-0.5 rounded-full mt-2'
+                              style={{ backgroundColor: 'color-mix(in srgb, var(--color-primario) 70%, transparent)' }}
+                            />
+                          </motion.div>
+                        </AnimatePresence>
+                      </div>
+                    ))}
                 </Slider>
 
                 <div className='absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1'>
