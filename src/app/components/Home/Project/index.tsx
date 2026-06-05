@@ -6,7 +6,7 @@ import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import { useEffect, useState } from 'react'
-import axios from 'axios'  // ← AGREGAR ESTA LÍNEA
+import axios from 'axios'
 import ProjectSkeleton from '../../Skeleton/Project'
 import { getRecursos } from '@/services/ambientalService'
 import { LinkExternoType } from '@/app/types/ambiental.types'
@@ -47,10 +47,10 @@ const LinkCard = ({ item }: { item: LinkExternoType }) => (
 )
 
 const Project = () => {
-  const [links, setLinks]   = useState<LinkExternoType[]>([])
+  const [links, setLinks] = useState<LinkExternoType[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // ✅ useEffect CORREGIDO con cancelación
   useEffect(() => {
     const source = axios.CancelToken.source();
 
@@ -58,9 +58,11 @@ const Project = () => {
       try {
         const data = await getRecursos(source.token);
         setLinks(data.linksExternoInterno.filter((l: LinkExternoType) => l.estado === 1))
+        setError(null)
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Error fetching links:', error);
+          setError(error instanceof Error ? error.message : 'Error al cargar los accesos directos')
         }
       } finally {
         setLoading(false)
@@ -86,6 +88,30 @@ const Project = () => {
       { breakpoint: 576, settings: { slidesToShow: 2 } },
       { breakpoint: 430, settings: { slidesToShow: 1 } },
     ],
+  }
+
+  // ⚠️ PANTALLA DE ERROR
+  if (error) {
+    return (
+      <div id='links' className='scroll-mt-12'>
+        <section className='bg-secondary dark:bg-darklight overflow-hidden min-h-[60vh] flex items-center justify-center'>
+          <div className='text-center p-8 max-w-md'>
+            <div className='text-5xl mb-4'>⚠️</div>
+            <h3 className='text-xl font-bold text-gray-800 dark:text-white mb-2'>
+              Error al cargar
+            </h3>
+            <p className='text-gray-600 dark:text-gray-300 mb-4'>{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className='px-4 py-2 rounded-lg text-white transition-colors'
+              style={{ backgroundColor: 'var(--color-primario)' }}
+            >
+              Reintentar
+            </button>
+          </div>
+        </section>
+      </div>
+    )
   }
 
   return (

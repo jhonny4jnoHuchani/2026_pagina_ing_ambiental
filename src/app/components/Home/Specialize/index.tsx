@@ -10,7 +10,7 @@ import { getGacetaEventos, getInstitucionPrincipal } from '@/services/ambientalS
 import { ConvocatoriaType, CursoType, InstitucionType } from '@/app/types/ambiental.types'
 import SpecializeSkeleton from '../../Skeleton/Specialize'
 
-const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
+const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 
 const formatFecha = (fecha: string) => {
   if (!fecha) return ''
@@ -33,9 +33,9 @@ const isNew = (fecha: string) =>
   new Date(fecha) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
 
 const COLUMNAS = [
-  { label: 'Convocatorias', icon: Megaphone, gradient: 'from-rose-500 to-orange-500',  href: '/#convocatorias' },
-  { label: 'Comunicados',   icon: FileText,  gradient: 'from-blue-500 to-indigo-500',  href: '/#convocatorias' },
-  { label: 'Avisos',        icon: Bell,      gradient: 'from-amber-500 to-yellow-500', href: '/#convocatorias' },
+  { label: 'Convocatorias', icon: Megaphone, gradient: 'from-rose-500 to-orange-500', href: '/#convocatorias' },
+  { label: 'Comunicados', icon: FileText, gradient: 'from-blue-500 to-indigo-500', href: '/#convocatorias' },
+  { label: 'Avisos', icon: Bell, gradient: 'from-amber-500 to-yellow-500', href: '/#convocatorias' },
 ]
 
 interface CardItem {
@@ -66,12 +66,13 @@ const ItemCard = ({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <div className='relative h-44 overflow-hidden bg-gray-100 dark:bg-darklight'>
+        <div className='relative h-44 overflow-hidden bg-gray-100 dark:bg-darklight'> {/* relative ya está ✅ */}
           {item?.imagen ? (
             <Image
               src={item.imagen}
               alt={item.titulo}
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className='object-cover group-hover:scale-110 transition-transform duration-700'
             />
           ) : (
@@ -168,9 +169,10 @@ const ItemCard = ({
 
 const Specialize = () => {
   const [convocatorias, setConvocatorias] = useState<ConvocatoriaType[]>([])
-  const [cursos, setCursos]               = useState<CursoType[]>([])
-  const [institucion, setInstitucion]     = useState<InstitucionType | null>(null)
-  const [loading, setLoading]             = useState(true)
+  const [cursos, setCursos] = useState<CursoType[]>([])
+  const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const source = axios.CancelToken.source();
@@ -184,9 +186,11 @@ const Specialize = () => {
         setConvocatorias(gacetaData.convocatorias)
         setCursos(gacetaData.cursos)
         setInstitucion(principalData.Descripcion)
+        setError(null)
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Error fetching Specialize:', error)
+          setError(error instanceof Error ? error.message : 'Error al cargar las convocatorias')
         }
       } finally {
         setLoading(false)
@@ -201,8 +205,8 @@ const Specialize = () => {
     if (['Convocatorias', 'Comunicados', 'Avisos'].includes(label)) {
       const tipoMap: Record<string, string> = {
         Convocatorias: 'CONVOCATORIAS',
-        Comunicados:   'COMUNICADOS',
-        Avisos:        'AVISOS',
+        Comunicados: 'COMUNICADOS',
+        Avisos: 'AVISOS',
       }
       const found = convocatorias
         .filter(c => c.con_estado === '1' && c.tipo_conv_comun?.tipo_conv_comun_titulo === tipoMap[label])
@@ -231,6 +235,28 @@ const Specialize = () => {
     return null
   }
 
+  // ⚠️ PANTALLA DE ERROR
+  if (error) {
+    return (
+      <section id='expertise' className='scroll-mt-12 min-h-[60vh] flex items-center justify-center'>
+        <div className='text-center p-8 max-w-md'>
+          <div className='text-5xl mb-4'>⚠️</div>
+          <h3 className='text-xl font-bold text-gray-800 dark:text-white mb-2'>
+            Error al cargar
+          </h3>
+          <p className='text-gray-600 dark:text-gray-300 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 rounded-lg text-white transition-colors'
+            style={{ backgroundColor: 'var(--color-primario)' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section id='expertise' className='scroll-mt-12'>
       <div className='container'>
@@ -244,8 +270,8 @@ const Specialize = () => {
           {loading
             ? Array.from({ length: 3 }).map((_, i) => <SpecializeSkeleton key={i} />)
             : COLUMNAS.map(col => (
-                <ItemCard key={col.label} col={col} item={getItem(col.label)} />
-              ))}
+              <ItemCard key={col.label} col={col} item={getItem(col.label)} />
+            ))}
         </div>
       </div>
     </section>

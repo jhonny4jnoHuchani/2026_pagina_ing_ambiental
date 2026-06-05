@@ -41,6 +41,7 @@ const ContactForm = () => {
   const [cursos, setCursos]           = useState<CursoType[]>([])
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
   const [loading, setLoading]         = useState(true)
+  const [error, setError]             = useState<string | null>(null)
   const [hoveredCurso, setHoveredCurso] = useState<number | null>(null)
 
   useEffect(() => {
@@ -54,9 +55,11 @@ const ContactForm = () => {
         ])
         setCursos(gacetaData.cursos)
         setInstitucion(principalData.Descripcion)
+        setError(null)
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Error fetching cursos:', error)
+          setError(error instanceof Error ? error.message : 'Error al cargar los cursos y seminarios')
         }
       } finally {
         setLoading(false)
@@ -82,6 +85,28 @@ const ContactForm = () => {
     .at(0)
 
   const items = [latestCurso, latestSeminario].filter(Boolean) as CursoType[]
+
+  // ⚠️ PANTALLA DE ERROR
+  if (error) {
+    return (
+      <section id='contact' className='scroll-mt-12 py-10 bg-secondary dark:bg-darklight min-h-[60vh] flex items-center justify-center'>
+        <div className='text-center p-8 max-w-md'>
+          <div className='text-5xl mb-4'>⚠️</div>
+          <h3 className='text-xl font-bold text-gray-800 dark:text-white mb-2'>
+            Error al cargar
+          </h3>
+          <p className='text-gray-600 dark:text-gray-300 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 rounded-lg text-white transition-colors'
+            style={{ backgroundColor: 'var(--color-primario)' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </section>
+    )
+  }
 
   if (loading) {
     return (

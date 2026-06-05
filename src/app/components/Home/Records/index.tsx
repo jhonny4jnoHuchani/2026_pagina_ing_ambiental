@@ -10,6 +10,7 @@ const Ubicacion = () => {
   const [ubicacion, setUbicacion] = useState<UbicacionType | null>(null)
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const source = axios.CancelToken.source();
@@ -22,9 +23,11 @@ const Ubicacion = () => {
         ])
         setUbicacion(contenidoData.ubicacion[0] ?? null)
         setInstitucion(principalData.Descripcion)
+        setError(null)
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Error fetching ubicacion:', error)
+          setError(error instanceof Error ? error.message : 'Error al cargar la ubicación')
         }
       } finally {
         setLoading(false)
@@ -34,6 +37,28 @@ const Ubicacion = () => {
 
     return () => source.cancel('Ubicacion desmontado')
   }, [])
+
+  // ⚠️ PANTALLA DE ERROR
+  if (error) {
+    return (
+      <section id='ubicacion' className='scroll-mt-12 min-h-[60vh] flex items-center justify-center'>
+        <div className='text-center p-8 max-w-md'>
+          <div className='text-5xl mb-4'>⚠️</div>
+          <h3 className='text-xl font-bold text-gray-800 dark:text-white mb-2'>
+            Error al cargar la ubicación
+          </h3>
+          <p className='text-gray-600 dark:text-gray-300 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 rounded-lg text-white transition-colors'
+            style={{ backgroundColor: 'var(--color-primario)' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section id='ubicacion' className='scroll-mt-12'>

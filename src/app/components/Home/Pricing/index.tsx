@@ -11,6 +11,7 @@ import { InstitucionType } from '@/app/types/ambiental.types'
 const Pricing = () => {
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [showControls, setShowControls] = useState(false)
@@ -31,9 +32,11 @@ const Pricing = () => {
       try {
         const data = await getInstitucionPrincipal(source.token)
         setInstitucion(data.Descripcion)
+        setError(null)
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Error fetching VideoVision:', error)
+          setError(error instanceof Error ? error.message : 'Error al cargar el video institucional')
         }
       } finally {
         setLoading(false)
@@ -52,12 +55,27 @@ const Pricing = () => {
   const tertiaryColor = institucion?.colorinstitucion?.[0]?.color_terciario ?? '#2d6a4f'
   const videoUrl = institucion?.institucion_link_video_vision
 
-  const stats = [
-    { icon: Trees, label: "Áreas Verdes", value: "12+", color: primaryColor },
-    { icon: Droplets, label: "Proyectos Agua", value: "8", color: secondaryColor },
-    { icon: Sun, label: "Energía Limpia", value: "5", color: "#e9c46a" },
-    { icon: Award, label: "Años Excelencia", value: "15+", color: "#e76f51" },
-  ]
+  // ⚠️ PANTALLA DE ERROR
+  if (error) {
+    return (
+      <section className='min-h-[60vh] flex items-center justify-center'>
+        <div className='text-center p-8 max-w-md'>
+          <div className='text-5xl mb-4'>⚠️</div>
+          <h3 className='text-xl font-bold text-gray-800 dark:text-white mb-2'>
+            Error al cargar el video
+          </h3>
+          <p className='text-gray-600 dark:text-gray-300 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 rounded-lg text-white transition-colors'
+            style={{ backgroundColor: 'var(--color-primario)' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </section>
+    )
+  }
 
   if (loading) {
     return (

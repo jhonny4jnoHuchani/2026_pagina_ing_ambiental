@@ -33,7 +33,7 @@ const quickLinks = [
 const Footer = () => {
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
   const [loading, setLoading] = useState(true)
-
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const source = axios.CancelToken.source();
@@ -42,9 +42,11 @@ const Footer = () => {
       try {
         const data = await getInstitucionPrincipal(source.token);
         setInstitucion(data.Descripcion);
+        setError(null);
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Error fetching footer data:', error);
+          setError(error instanceof Error ? error.message : 'Error al cargar los datos del pie de página');
         }
       } finally {
         setLoading(false);
@@ -59,6 +61,28 @@ const Footer = () => {
 
   const hoverOn = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLElement).style.color = primaryColor }
   const hoverOff = (e: React.MouseEvent<Element>) => { (e.currentTarget as HTMLElement).style.color = '' }
+
+  // ⚠️ PANTALLA DE ERROR
+  if (error) {
+    return (
+      <footer className='py-10'>
+        <div className='container text-center p-8'>
+          <div className='text-5xl mb-4'>⚠️</div>
+          <h3 className='text-xl font-bold text-gray-800 dark:text-white mb-2'>
+            Error al cargar el pie de página
+          </h3>
+          <p className='text-gray-600 dark:text-gray-300 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 rounded-lg text-white transition-colors'
+            style={{ backgroundColor: 'var(--color-primario)' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </footer>
+    )
+  }
 
   return (
     <footer>

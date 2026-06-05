@@ -108,10 +108,10 @@ const Header: React.FC = () => {
   }, [])
 
   useEffect(() => {
-  const handleCloseMobileMenu = () => setMenuOpen(false)
-  window.addEventListener('closeMobileMenu', handleCloseMobileMenu)
-  return () => window.removeEventListener('closeMobileMenu', handleCloseMobileMenu)
-}, [])
+    const handleCloseMobileMenu = () => setMenuOpen(false)
+    window.addEventListener('closeMobileMenu', handleCloseMobileMenu)
+    return () => window.removeEventListener('closeMobileMenu', handleCloseMobileMenu)
+  }, [])
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -231,10 +231,13 @@ const Header: React.FC = () => {
       )}
 
       {/* Menú mobile */}
-      <div
+      {/* Menú mobile */}
+      <motion.div
         ref={mobileMenuRef}
-        className={`xl:hidden fixed top-0 right-0 h-full w-full max-w-xs shadow-xl transform transition-transform duration-300 z-50 ${menuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
+        initial={{ x: '100%' }}
+        animate={{ x: menuOpen ? 0 : '100%' }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className={`xl:hidden fixed top-0 right-0 h-full w-full max-w-xs shadow-xl z-50`}
         style={{
           backgroundColor: isDark
             ? 'var(--color-mobile-menu-dark)'
@@ -273,7 +276,7 @@ const Header: React.FC = () => {
             />
           </div>
         </nav>
-      </div>
+      </motion.div>
     </motion.header>
   )
 }

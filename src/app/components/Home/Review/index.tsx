@@ -23,6 +23,7 @@ const Review = () => {
   const [ofertas, setOfertas] = useState<OfertaAcademicaType[]>([])
   const [videos, setVideos] = useState<VideoType[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const source = axios.CancelToken.source();
@@ -42,12 +43,12 @@ const Review = () => {
         setServicios(gacetaData.serviciosCarrera)
         setOfertas(gacetaData.ofertasAcademicas)
         setPublicaciones(recursosData.upea_publicaciones)
-        // videos vienen de contenido — si ya los tienes en contexto global pásalos como prop
-        // por ahora dejamos vacío hasta que lo conectes
         setVideos([])
+        setError(null)
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Error fetching Review data:', error)
+          setError(error instanceof Error ? error.message : 'Error al cargar los datos')
         }
       } finally {
         setLoading(false)
@@ -57,6 +58,28 @@ const Review = () => {
 
     return () => source.cancel('Review desmontado')
   }, [])
+
+  // ⚠️ PANTALLA DE ERROR
+  if (error) {
+    return (
+      <section className='bg-secondary dark:bg-darklight py-16 min-h-[60vh] flex items-center justify-center'>
+        <div className='text-center p-8 max-w-md'>
+          <div className='text-5xl mb-4'>⚠️</div>
+          <h3 className='text-xl font-bold text-gray-800 dark:text-white mb-2'>
+            Error al cargar
+          </h3>
+          <p className='text-gray-600 dark:text-gray-300 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 rounded-lg text-white transition-colors'
+            style={{ backgroundColor: 'var(--color-primario)' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className='bg-secondary dark:bg-darklight py-16'>

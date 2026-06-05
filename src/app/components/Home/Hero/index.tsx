@@ -121,6 +121,7 @@ const Hero = () => {
   const [portadas, setPortadas] = useState<PortadaType[]>([])
   const [institucion, setInstitucion] = useState<InstitucionType | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const { scrollY } = useScroll()
@@ -133,15 +134,17 @@ const Hero = () => {
     const fetchData = async () => {
       try {
         const [contenidoData, principalData] = await Promise.all([
-          getContenido(source.token),        // ← Sin "as any"
-          getInstitucionPrincipal(source.token),  // ← Sin "as any"
+          getContenido(source.token),
+          getInstitucionPrincipal(source.token),
         ]);
 
         setPortadas(contenidoData.portada);
         setInstitucion(principalData.Descripcion);
+        setError(null);
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Error fetching Hero data:', error);
+          setError(error instanceof Error ? error.message : 'Error al cargar los datos');
         }
       } finally {
         setLoading(false);
@@ -178,6 +181,28 @@ const Hero = () => {
         }}
       />
     ),
+  }
+
+  // ⚠️ PANTALLA DE ERROR
+  if (error) {
+    return (
+      <section className='min-h-[60vh] flex items-center justify-center'>
+        <div className='text-center p-8 max-w-md'>
+          <div className='text-5xl mb-4'>⚠️</div>
+          <h3 className='text-xl font-bold text-gray-800 dark:text-white mb-2'>
+            Error al cargar
+          </h3>
+          <p className='text-gray-600 dark:text-gray-300 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 rounded-lg text-white transition-colors'
+            style={{ backgroundColor: 'var(--color-primario)' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -384,6 +409,7 @@ const Hero = () => {
                           src={item.portada_imagen}
                           alt={item.portada_titulo}
                           fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 40vw"
                           className='object-cover transition-transform duration-700 group-hover:scale-105'
                           priority={idx === 0}
                         />

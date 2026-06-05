@@ -15,6 +15,7 @@ const Category = () => {
   const [autoridades, setAutoridades]   = useState<AutoridadType[]>([])
   const [institucion, setInstitucion]   = useState<InstitucionType | null>(null)
   const [loading, setLoading]           = useState(true)
+  const [error, setError]               = useState<string | null>(null)
   const [hoveredId, setHoveredId]       = useState<number | null>(null)
   const [mounted, setMounted]           = useState(false)
   const { theme }                       = useTheme()
@@ -36,9 +37,11 @@ const Category = () => {
         ])
         setAutoridades(contenidoData.autoridad)
         setInstitucion(principalData.Descripcion)
+        setError(null)
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Error fetching autoridades:', error)
+          setError(error instanceof Error ? error.message : 'Error al cargar las autoridades')
         }
       } finally {
         setLoading(false)
@@ -68,6 +71,28 @@ const Category = () => {
     { icon: Shield,   delay: 3, x: '85%', y: '80%', size: 22, duration: 7  },
     { icon: Quote,    delay: 4, x: '45%', y: '10%', size: 18, duration: 11 },
   ]
+
+  // ⚠️ PANTALLA DE ERROR
+  if (error) {
+    return (
+      <section className='min-h-[60vh] flex items-center justify-center bg-gray-50 dark:bg-gray-900'>
+        <div className='text-center p-8 max-w-md'>
+          <div className='text-5xl mb-4'>⚠️</div>
+          <h3 className='text-xl font-bold text-gray-800 dark:text-white mb-2'>
+            Error al cargar las autoridades
+          </h3>
+          <p className='text-gray-600 dark:text-gray-300 mb-4'>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='px-4 py-2 rounded-lg text-white transition-colors'
+            style={{ backgroundColor: 'var(--color-primario)' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <motion.section
