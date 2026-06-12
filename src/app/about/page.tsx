@@ -638,7 +638,10 @@ export default function AboutPage() {
               <motion.div whileHover={{ scale: 1.02 }} className='max-w-4xl mx-auto'>
                 <div className='relative aspect-video rounded-3xl overflow-hidden ring-1 ring-white/20 shadow-2xl'>
                   <iframe
-                    src={institucion.institucion_link_video_vision}
+                    src={institucion.institucion_link_video_vision.replace(
+                      'm.youtube.com',
+                      'www.youtube.com'
+                    )}
                     title='Video Institucional'
                     className='w-full h-full'
                     allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'

@@ -221,11 +221,11 @@ const Hero = () => {
       </div>
 
       <div className='overflow-hidden'>
-        <div className='container relative z-20 pt-28 lg:pt-32'>
+        <div className='container relative z-20 pt-10 lg:pt-15'>
 
           {/* Badge universidad */}
           <motion.div
-            className='text-center mb-10'
+            className='text-center mb-6'
             initial='hidden'
             animate='visible'
             variants={containerVariants}
@@ -263,7 +263,7 @@ const Hero = () => {
             />
           </motion.div>
 
-          <div className='relative z-20 grid lg:grid-cols-12 grid-cols-1 items-center lg:justify-items-normal justify-items-center gap-16 pb-16'>
+          <div className='relative z-20 grid lg:grid-cols-12 grid-cols-1 items-center lg:justify-items-normal justify-items-center gap-13 pb-13'>
 
             {/* Columna izquierda */}
             <motion.div
@@ -273,33 +273,42 @@ const Hero = () => {
               variants={containerVariants}
               style={{ y: yParallax, opacity: opacityParallax }}
             >
-              <div className='flex flex-col lg:items-start items-center gap-8'>
+              <div className='flex flex-col items-center lg:items-start gap-2'>
 
                 {/* Logo + nombre institución */}
-                <motion.div variants={fadeUpVariant} className='flex items-center gap-4 group cursor-pointer'>
+                <motion.div variants={fadeUpVariant} className='relative w-[210px] h-[210px]'>
+                  {/* Corona giratoria */}
+                  <motion.div
+                    className='absolute inset-0'
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <Image
+                      src='/decoradores/Diana_circular.svg'
+                      alt=''
+                      fill
+                      className='object-contain dark:invert'
+                      style={{ filter: 'invert(35%) sepia(80%) saturate(800%) hue-rotate(100deg) brightness(1.1)' }}
+                    />
+                  </motion.div>
+
+                  {/* Logo centrado encima */}
                   {institucion?.institucion_logo && (
-                    <motion.div whileHover={{ rotate: 5, scale: 1.05 }} transition={{ type: 'spring', stiffness: 400 }}>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ type: 'spring', stiffness: 400 }}
+                      className='absolute inset-0 flex items-center justify-center z-10'
+                    >
                       <Image
                         src={institucion.institucion_logo}
                         alt={institucion.institucion_nombre}
-                        width={56}
-                        height={56}
-                        className='rounded-full object-contain transition-all duration-300'
+                        width={150}
+                        height={150}
+                        className='rounded-full object-contain'
                         style={{ border: '2px solid color-mix(in srgb, var(--color-primario) 30%, transparent)' }}
                       />
                     </motion.div>
                   )}
-                  <div>
-                    <span className='text-xs text-lightgrey/60 uppercase tracking-widest block'>
-                      {institucion?.institucion_iniciales}
-                    </span>
-                    <span
-                      className='text-[10px] uppercase tracking-wider'
-                      style={{ color: 'color-mix(in srgb, var(--color-primario) 50%, transparent)' }}
-                    >
-                      Unidad Académica
-                    </span>
-                  </div>
                 </motion.div>
 
                 {/* Título */}
@@ -349,11 +358,17 @@ const Hero = () => {
                         href={institucion.institucion_facebook}
                         target='_blank'
                         rel='noopener noreferrer'
-                        className='text-sm text-lightgrey transition-colors duration-300 flex items-center gap-1'
+                        className='text-sm text-lightgrey transition-colors duration-300 flex items-center gap-1.5 group'
                         onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primario)')}
                         onMouseLeave={e => (e.currentTarget.style.color = '')}
                       >
-                        <span>📘</span> Facebook
+                        <img
+                          src='/images/records/face.svg'
+                          alt=''
+                          className='w-4 h-4 opacity-60 group-hover:opacity-100 transition-all duration-300'
+                          style={{ filter: 'var(--icon-filter)' }}
+                        />
+                        Facebook
                       </motion.a>
                     )}
                     {institucion.institucion_youtube && (
@@ -362,11 +377,17 @@ const Hero = () => {
                         href={institucion.institucion_youtube}
                         target='_blank'
                         rel='noopener noreferrer'
-                        className='text-sm text-lightgrey transition-colors duration-300 flex items-center gap-1'
+                        className='text-sm text-lightgrey transition-colors duration-300 flex items-center gap-1.5 group'
                         onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primario)')}
                         onMouseLeave={e => (e.currentTarget.style.color = '')}
                       >
-                        <span>▶️</span> YouTube
+                        <img
+                          src='/images/records/youtube.svg'
+                          alt=''
+                          className='w-4 h-4 opacity-60 group-hover:opacity-100 transition-all duration-300'
+                          style={{ filter: 'var(--icon-filter)' }}
+                        />
+                        YouTube
                       </motion.a>
                     )}
                     {institucion.institucion_twitter && (
@@ -375,11 +396,17 @@ const Hero = () => {
                         href={institucion.institucion_twitter}
                         target='_blank'
                         rel='noopener noreferrer'
-                        className='text-sm text-lightgrey transition-colors duration-300 flex items-center gap-1'
+                        className='text-sm text-lightgrey transition-colors duration-300 flex items-center gap-1.5 group'
                         onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primario)')}
                         onMouseLeave={e => (e.currentTarget.style.color = '')}
                       >
-                        <span>📱</span> Telegram
+                        <img
+                          src='/images/records/whatsapp.svg'
+                          alt=''
+                          className='w-4 h-4 opacity-60 group-hover:opacity-100 transition-all duration-300'
+                          style={{ filter: 'var(--icon-filter)' }}
+                        />
+                        WhatsApp
                       </motion.a>
                     )}
                   </motion.div>
@@ -421,9 +448,6 @@ const Hero = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
                           >
-                            <p className='text-white text-sm font-medium tracking-wide'>
-                              {item.portada_titulo}
-                            </p>
                             <div
                               className='w-12 h-0.5 rounded-full mt-2'
                               style={{ backgroundColor: 'color-mix(in srgb, var(--color-primario) 70%, transparent)' }}
@@ -434,9 +458,6 @@ const Hero = () => {
                     ))}
                 </Slider>
 
-                <div className='absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1'>
-                  <span className='text-white text-xs font-medium'>Proyecto destacado</span>
-                </div>
               </motion.div>
             </motion.div>
 
@@ -474,6 +495,85 @@ const Hero = () => {
           </motion.div>
 
         </div>
+        <div className='absolute inset-0 -z-10 pointer-events-none overflow-hidden'>
+          {/* Light mode — tono verde */}
+          <Image
+            src='/decoradores/2arboles.svg'
+            alt=''
+            fill
+            className='object-contain object-bottom scale-75 opacity-[0.08] dark:hidden'
+            style={{ filter: 'invert(30%) sepia(100%) saturate(1000%) hue-rotate(100deg) brightness(1.2)' }}
+          />
+          {/* Dark mode — blanco */}
+          <Image
+            src='/decoradores/2arboles.svg'
+            alt=''
+            fill
+            className='object-contain object-bottom scale-75 opacity-[0.10] hidden dark:block'
+            style={{ filter: 'invert(1)' }}
+          />
+        </div>
+        {/* Lluvia */}
+        <canvas
+          ref={(canvas) => {
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            let animId: number;
+            let drops: { x: number; y: number; length: number; speed: number; opacity: number; width: number }[] = [];
+
+            const resize = () => {
+              canvas.width = canvas.parentElement?.offsetWidth ?? window.innerWidth;
+              canvas.height = canvas.parentElement?.offsetHeight ?? window.innerHeight;
+            };
+
+            const init = () => {
+              drops = Array.from({ length: 250 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                length: Math.random() * 25 + 15,
+                speed: Math.random() * 6 + 4,
+                opacity: Math.random() * 0.6 + 0.3,
+                width: Math.random() * 1.2 + 0.5,
+              }));
+            };
+
+            const draw = () => {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              const isDark = document.documentElement.classList.contains('dark');
+              drops.forEach(d => {
+                ctx.beginPath();
+                ctx.moveTo(d.x, d.y);
+                ctx.lineTo(d.x - 1, d.y + d.length);
+                ctx.strokeStyle = `rgba(${isDark ? '120, 200, 255' : '0, 100, 50'}, ${d.opacity})`;
+                ctx.lineWidth = d.width;
+                ctx.stroke();
+                d.y += d.speed;
+                if (d.y > canvas.height) {
+                  d.y = -d.length;
+                  d.x = Math.random() * canvas.width;
+                }
+              });
+              animId = requestAnimationFrame(draw);
+            };
+
+            resize();
+            init();
+            draw();
+
+            const onResize = () => { resize(); init(); };
+            window.addEventListener('resize', onResize);
+
+            return () => {
+              cancelAnimationFrame(animId);
+              window.removeEventListener('resize', onResize);
+            };
+          }}
+          className='absolute inset-0 w-full h-full z-0 pointer-events-none opacity-50 dark:opacity-60'
+        />
+
+
       </div>
     </section>
   )

@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "apiadministrador.upea.bo" },
       { protocol: "https", hostname: "archivosminio.upea.bo" },
+      { protocol: 'https', hostname: 'img.youtube.com'},
     ],
   },
 
@@ -27,7 +28,7 @@ const nextConfig: NextConfig = {
               "font-src 'self'",
               "connect-src 'self' https://apiadministrador.upea.bo https://servicioadministrador.upea.bo https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
               // ✅ NUEVO — permite iframes de Google Maps y YouTube
-              "frame-src 'self' https://www.google.com https://www.youtube.com https://maps.googleapis.com",
+              "frame-src 'self' https://www.google.com https://www.youtube.com https://m.youtube.com https://www.youtube-nocookie.com https://maps.googleapis.com https://archivosminio.upea.bo",
               "frame-ancestors 'none'",
             ].join("; "),
           },

@@ -45,7 +45,7 @@ const Logo = () => {
           // Fallback a los SVGs originales si no hay logo en la API
           <>
             <Image
-              src='/images/logo/logo.svg'
+              src='/images/logo/logo_ambiental.png'
               alt='logo'
               width={40}
               height={40}
@@ -53,7 +53,7 @@ const Logo = () => {
               priority
             />
             <Image
-              src='/images/logo/white-logo.svg'
+              src='/images/logo/logo_ambiental.png'
               alt='logo'
               width={40}
               height={40}
