@@ -1,6 +1,7 @@
 'use client'
 import axios from 'axios'
 import Image from 'next/image'
+
 import { useEffect, useState } from 'react'
 import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
@@ -345,8 +346,8 @@ const Hero = () => {
 
                 {/* Botones */}
                 <motion.div variants={fadeUpVariant} className='flex flex-wrap items-center gap-4'>
-                  <ActionButton href='/#publicaciones' variant='primary'>✨ Explorar</ActionButton>
-                  <ActionButton href='/#convocatorias' variant='secondary'>📢 Convocatorias</ActionButton>
+                  <ActionButton href='/publicaciones' variant='primary'>✨ Explorar</ActionButton>
+                  <ActionButton href='/convocatorias' variant='secondary'>📢 Convocatorias</ActionButton>
                 </motion.div>
 
                 {/* Redes sociales */}
@@ -480,19 +481,6 @@ const Hero = () => {
             <Image src='/images/banner/pattern2.svg' alt='pattern2' width={120} height={120} />
           </motion.div>
 
-          {/* Scroll indicator */}
-          <motion.div
-            className='absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2 z-10'
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, y: [0, 10, 0] }}
-            transition={{ delay: 2, duration: 1.5, repeat: Infinity }}
-          >
-            <span className='text-xs text-lightgrey/50 uppercase tracking-wider'>Scroll</span>
-            <div
-              className='w-0.5 h-8 rounded-full'
-              style={{ background: 'linear-gradient(to bottom, color-mix(in srgb, var(--color-primario) 50%, transparent), transparent)' }}
-            />
-          </motion.div>
 
         </div>
         <div className='absolute inset-0 -z-10 pointer-events-none overflow-hidden'>
@@ -572,6 +560,38 @@ const Hero = () => {
           }}
           className='absolute inset-0 w-full h-full z-0 pointer-events-none opacity-50 dark:opacity-60'
         />
+
+  <div className='absolute bottom-0 left-0 w-[45%] sm:w-[35%] -mb-6 pointer-events-none -z-10'>
+    <Image
+      src="/images/hero_foot_recort.png"
+      alt=""
+      width={1200}
+      height={400}
+      className='w-full h-auto'
+    />
+  </div>
+
+  {/* Pasto centro (espejado) */}
+  <div className='absolute bottom-0 left-1/2 -translate-x-1/2 w-[45%] sm:w-[35%] -mb-6 pointer-events-none -z-10 scale-x-[-1]'>
+    <Image
+      src="/images/hero_foot_recort.png"
+      alt=""
+      width={1200}
+      height={400}
+      className='w-full h-auto'
+    />
+  </div>
+
+  {/* Pasto derecha (espejado) */}
+  <div className='absolute bottom-0 right-0 w-[45%] sm:w-[35%] -mb-6 pointer-events-none -z-10 scale-x-[-1]'>
+    <Image
+      src="/images/hero_foot_recort.png"
+      alt=""
+      width={1200}
+      height={400}
+      className='w-full h-auto'
+    />
+  </div>
 
 
       </div>

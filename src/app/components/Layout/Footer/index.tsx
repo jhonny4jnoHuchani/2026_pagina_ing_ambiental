@@ -86,10 +86,10 @@ const Footer = () => {
 
   return (
     <footer>
-      <div className='container py-14'>
+      <div className='container py-8'>
 
         {/* ── Fila superior ── */}
-        <div className='flex flex-col sm:flex-row sm:items-center justify-between mb-20 gap-5'>
+        <div className='flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-5'>
 
           {/* Logo institucional */}
           <div className='w-fit flex items-center gap-3'>
@@ -99,14 +99,29 @@ const Footer = () => {
               <Image
                 src={institucion.institucion_logo}
                 alt={institucion.institucion_nombre}
-                width={40}
-                height={40}
+                width={100}
+                height={100}
                 className='rounded-full object-contain'
               />
+              
             ) : null}
-            <p className='text-darkblue dark:text-white font-semibold text-sm'>
-              {loading ? '...' : institucion?.institucion_nombre ?? 'Ingeniería Ambiental'}
-            </p>
+                        <motion.a
+              href='https://utic.upea.bo/'
+              target='_blank'
+              rel='noreferrer'
+              whileHover={{ opacity: 0.7 }}
+              className='inline-flex items-center gap-2 text-xs text-lightgrey duration-300'
+              onMouseEnter={hoverOn}
+              onMouseLeave={hoverOff}
+            >
+              <Image
+                src='/logo/logo_utic_cir.png'
+                alt='UTIC'
+                width={100}
+                height={100}
+                className='rounded-full opacity-100'
+              />
+            </motion.a>
           </div>
 
           {/* Plataformas */}
@@ -146,7 +161,7 @@ const Footer = () => {
         </div>
 
         {/* ── Grid 3 columnas ── */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-16 xl:gap-8'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8'>
 
           {/* COLUMNA 1 — Redes sociales */}
           <div className='lg:col-span-4 sm:col-span-2 flex flex-col gap-5'>
@@ -196,32 +211,15 @@ const Footer = () => {
               )}
             </div>
 
-            <motion.a
-              href='https://utic.upea.bo/'
-              target='_blank'
-              rel='noreferrer'
-              whileHover={{ opacity: 0.7 }}
-              className='inline-flex items-center gap-2 text-xs text-lightgrey duration-300'
-              onMouseEnter={hoverOn}
-              onMouseLeave={hoverOff}
-            >
-              <Image
-                src='/logo/utic.png'
-                alt='UTIC'
-                width={24}
-                height={24}
-                className='rounded-full opacity-60'
-              />
-              UTIC — Unidad de Tecnologías de Información
-            </motion.a>
+
           </div>
 
           {/* COLUMNA 2 — Links rápidos */}
           <div className='lg:col-span-4 col-span-1'>
-            <div className='flex gap-20'>
+            <div className='flex gap-10 sm:gap-16'>
               {quickLinks.map((group, i) => (
                 <div key={i} className='group relative col-span-2'>
-                  <p className='text-xl font-semibold mb-9'>{group.section}</p>
+                  <p className='text-xl font-semibold mb-4'>{group.section}</p>
                   <ul>
                     {group.links.map((item, j) => (
                       <li key={j} className='mb-3'>
@@ -254,7 +252,7 @@ const Footer = () => {
             )}
 
             {institucion?.institucion_celular1 ? (
-              <div className='flex gap-2 mt-10'>
+              <div className='flex gap-2 mt-4'>
                 <Icon icon='tabler:phone' width={22} height={22} className='text-lightgrey shrink-0' />
                 <Link
                   href={`tel:${institucion.institucion_celular1}`}
@@ -268,7 +266,7 @@ const Footer = () => {
             ) : null}
 
             {institucion?.institucion_celular2 ? (
-              <div className='flex gap-2 mt-4'>
+              <div className='flex gap-2 mt-2'>
                 <Icon icon='tabler:phone' width={22} height={22} className='text-lightgrey shrink-0' />
                 <Link
                   href={`tel:${institucion.institucion_celular2}`}
@@ -282,7 +280,7 @@ const Footer = () => {
             ) : null}
 
             {institucion?.institucion_correo1 && (
-              <div className='flex gap-2 mt-10'>
+              <div className='flex gap-2 mt-4'>
                 <Icon icon='tabler:mail' width={22} height={22} className='text-lightgrey shrink-0' />
                 <Link
                   href={`mailto:${institucion.institucion_correo1}`}
@@ -296,7 +294,7 @@ const Footer = () => {
             )}
 
             {institucion?.institucion_correo2 && (
-              <div className='flex gap-2 mt-4'>
+              <div className='flex gap-2 mt-2'>
                 <Icon icon='tabler:mail' width={22} height={22} className='text-lightgrey shrink-0' />
                 <Link
                   href={`mailto:${institucion.institucion_correo2}`}

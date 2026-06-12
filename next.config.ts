@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://apiadministrador.upea.bo https://archivosminio.upea.bo",
+              "img-src 'self' data: blob: https://apiadministrador.upea.bo https://archivosminio.upea.bo https://cdnjs.cloudflare.com https://*.tile.openstreetmap.org",
               "font-src 'self'",
               "connect-src 'self' https://apiadministrador.upea.bo https://servicioadministrador.upea.bo https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
               // ✅ NUEVO — permite iframes de Google Maps y YouTube

@@ -20,13 +20,15 @@ const LinkCard = ({ item }: { item: LinkExternoType }) => (
       className='block p-5 bg-white dark:bg-lightdarkblue m-3 rounded-lg hover:shadow-lg transition-shadow duration-300'
     >
       <div className='w-full mb-4'>
-        <Image
-          src={item.imagen}
-          alt={item.nombre}
-          width={234}
-          height={236}
-          className='w-full rounded-lg object-cover'
-        />
+        <div className='relative w-full h-48 md:h-56 lg:h-64'>
+          <Image
+            src={item.imagen}
+            alt={item.nombre}
+            fill
+            className='object-cover rounded-lg'
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        </div>
       </div>
       <div className='flex items-center gap-2'>
         <span
@@ -45,7 +47,6 @@ const LinkCard = ({ item }: { item: LinkExternoType }) => (
     </Link>
   </div>
 )
-
 const Project = () => {
   const [links, setLinks] = useState<LinkExternoType[]>([])
   const [loading, setLoading] = useState(true)
@@ -77,7 +78,7 @@ const Project = () => {
     dots: true,
     arrows: false,
     infinite: true,
-    slidesToShow: 4,
+    slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
     speed: 500,

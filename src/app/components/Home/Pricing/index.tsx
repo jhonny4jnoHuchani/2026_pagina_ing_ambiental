@@ -244,7 +244,7 @@ const Pricing = () => {
               className='flex flex-wrap gap-4 pt-2'
             >
               <motion.a
-                href='#convocatorias'
+                href='convocatorias'
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className='relative group px-6 py-2.5 rounded-full font-semibold text-white overflow-hidden shadow-lg'
@@ -258,7 +258,7 @@ const Pricing = () => {
               </motion.a>
 
               <motion.a
-                href='#cursos'
+                href='cursos'
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={`px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 shadow-lg ${

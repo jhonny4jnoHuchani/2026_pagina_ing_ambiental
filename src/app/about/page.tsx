@@ -13,6 +13,72 @@ import { Leaf, TreePine, Wind, Droplets, Sparkles, Crown } from 'lucide-react'
 import { getInstitucionPrincipal, getContenido } from '@/services/ambientalService'
 import { InstitucionType, AutoridadType } from '@/app/types/ambiental.types'
 
+const ExpandableText = ({ html }: { html: string }) => {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <div className='space-y-4'>
+      <div 
+        className={`
+          relative text-lightgrey text-lg leading-relaxed
+          transition-all duration-500 ease-in-out
+          overflow-hidden
+          ${expanded ? 'max-h-[2000px]' : 'max-h-32'}
+        `}
+      >
+        {/* Gradiente sutil cuando no está expandido */}
+        {!expanded && (
+          <div 
+            className='
+              absolute bottom-0 left-0 right-0 h-12 
+              bg-gradient-to-t from-white dark:from-darklight 
+              to-transparent pointer-events-none
+            '
+          />
+        )}
+        <StripHtml html={html} />
+      </div>
+      
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className='
+          group relative inline-flex items-center gap-2
+          text-sm font-semibold tracking-wide
+          transition-all duration-300 
+          hover:gap-3 active:scale-95
+          focus:outline-none focus:ring-2 focus:ring-offset-2
+          rounded-full px-4 py-2
+        '
+        style={{ 
+          color: 'var(--color-primario)',
+          backgroundColor: 'color-mix(in srgb, var(--color-primario) 8%, transparent)',
+        }}
+      >
+        <span className='relative'>
+          {expanded ? 'Ver menos' : 'Ver más'}
+        </span>
+        
+        {/* Icono animado */}
+        <svg 
+          className={`
+            w-4 h-4 transition-all duration-300
+            ${expanded ? 'rotate-180' : 'group-hover:translate-x-0.5'}
+          `}
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d={expanded ? "M5 15l7-7 7 7" : "M9 5l7 7-7 7"}
+          />
+        </svg>
+      </button>
+    </div>
+  )
+}
 // ── Helpers ───────────────────────────────────────────────
 const StripHtml = ({ html }: { html: string }) =>
   html ? <>{html.replace(/<[^>]*>/g, '')}</> : null
@@ -352,9 +418,7 @@ export default function AboutPage() {
                   />
                 </SectionIn>
                 <SectionIn delay={0.25} yOffset={20}>
-                  <p className='text-lightgrey text-lg leading-relaxed'>
-                    <StripHtml html={institucion.institucion_sobre_ins} />
-                  </p>
+                  <ExpandableText html={institucion.institucion_sobre_ins} />
                 </SectionIn>
                 <SectionIn delay={0.35} yOffset={20}>
                   <div className='grid grid-cols-3 gap-4 pt-4'>
@@ -408,8 +472,8 @@ export default function AboutPage() {
                         <Image
                           src={institucion.institucion_logo}
                           alt={institucion.institucion_nombre}
-                          width={200}
-                          height={200}
+                          width={400}
+                          height={400}
                           className='object-contain drop-shadow-2xl'
                         />
                       </motion.div>
@@ -419,8 +483,21 @@ export default function AboutPage() {
                     <p className='text-xl font-black tracking-wide' style={{ color: 'var(--color-primario)' }}>
                       {institucion.institucion_nombre}
                     </p>
-                    <p className='text-xs text-lightgrey mt-1'>Universidad Pública de El Alto</p>
+                    
                   </div>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ type: 'spring', stiffness: 300 }}
+                      className='opacity-200 dark:opacity-100'
+                    >
+                      <Image
+                        src="/logo/upeaLogo.png"
+                        alt="Logo Universidad Pública de El Alto"
+                        width={220}
+                        height={220}
+                        className='object-contain'
+                      />
+                    </motion.div>
                 </div>
               </SectionIn>
             </div>

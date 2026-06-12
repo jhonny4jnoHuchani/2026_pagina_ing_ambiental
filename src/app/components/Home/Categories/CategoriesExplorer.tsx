@@ -52,17 +52,17 @@ export default function CategoriesExplorer({
   loading,
 }: Props) {
   const categories = [
-    { label: 'Convocatorias', href: '/#convocatorias', count: convocatorias.filter(c => c.con_estado === '1').length },
-    { label: 'Comunicados',   href: '/#convocatorias', count: convocatorias.filter(c => c.tipo_conv_comun?.tipo_conv_comun_titulo === 'COMUNICADOS').length },
-    { label: 'Avisos',        href: '/#convocatorias', count: convocatorias.filter(c => c.tipo_conv_comun?.tipo_conv_comun_titulo === 'AVISOS').length },
-    { label: 'Cursos',        href: '/#cursos',        count: cursos.filter(c => c.tipo_curso_otro?.tipo_conv_curso_nombre === 'CURSOS').length },
-    { label: 'Seminarios',    href: '/#cursos',        count: cursos.filter(c => c.tipo_curso_otro?.tipo_conv_curso_nombre === 'SEMINARIOS').length },
-    { label: 'Eventos',       href: '/#eventos',       count: eventos.length },
-    { label: 'Publicaciones', href: '/#publicaciones', count: publicaciones.length },
-    { label: 'Gaceta',        href: '/#gaceta',        count: gaceta.length },
-    { label: 'Servicios',     href: '/#servicios',     count: servicios.length },
-    { label: 'Ofertas',       href: '/#ofertas',       count: ofertas.length },
-    { label: 'Videos',        href: '/#videos',        count: videos.length },
+    { label: 'Convocatorias', href: '/convocatorias', count: convocatorias.filter(c => c.con_estado === '1').length },
+    { label: 'Comunicados',   href: '/convocatorias', count: convocatorias.filter(c => c.tipo_conv_comun?.tipo_conv_comun_titulo === 'COMUNICADOS').length },
+    { label: 'Avisos',        href: '/convocatorias', count: convocatorias.filter(c => c.tipo_conv_comun?.tipo_conv_comun_titulo === 'AVISOS').length },
+    { label: 'Cursos',        href: '/cursos',        count: cursos.filter(c => c.tipo_curso_otro?.tipo_conv_curso_nombre === 'CURSOS').length },
+    { label: 'Seminarios',    href: '/cursos',        count: cursos.filter(c => c.tipo_curso_otro?.tipo_conv_curso_nombre === 'SEMINARIOS').length },
+    { label: 'Eventos',       href: '/eventos',       count: eventos.length },
+    { label: 'Publicaciones', href: '/publicaciones', count: publicaciones.length },
+    { label: 'Gaceta',        href: '/gaceta',        count: gaceta.length },
+    { label: 'Servicios',     href: '/servicios',     count: servicios.length },
+    { label: 'Ofertas',       href: '/ofertas',       count: ofertas.length },
+    { label: 'Videos',        href: '/videos',        count: videos.length },
   ]
 
   const maxCount = Math.max(...categories.map(c => c.count), 1)

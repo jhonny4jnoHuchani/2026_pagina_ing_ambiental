@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { getInstitucionPrincipal } from '@/services/ambientalService'
+import { InstitucionType } from '@/app/types/ambiental.types'
 
 export default function FaviconProvider() {
   useEffect(() => {

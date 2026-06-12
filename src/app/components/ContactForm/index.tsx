@@ -170,7 +170,7 @@ const ContactForm = () => {
                 onMouseLeave={() => setHoveredCurso(null)}
               >
                 <Link
-                  href='/#cursos'
+                  href='/cursos'
                   className='group block bg-white dark:bg-lightdarkblue rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-darkblue/10 dark:border-white/10'
                 >
                   <div className='relative h-48 sm:h-52 overflow-hidden bg-gray-100 dark:bg-darklight'>
