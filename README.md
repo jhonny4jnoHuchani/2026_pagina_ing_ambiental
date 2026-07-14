@@ -65,7 +65,7 @@ Desarrollado con **Next.js 16** (App Router) + TypeScript, con consumo de API RE
 
 ---
 
-##  Lo que hace el Proyecto
+##  Lo que hace 
 
 - Renderiza interfaz con **Next.js 16 App Router** y React 19
 - Consume **4 endpoints REST** de la API administrativa UPEA
@@ -82,7 +82,7 @@ Desarrollado con **Next.js 16** (App Router) + TypeScript, con consumo de API RE
 
 ---
 
-##  Estructura del Proyecto
+##  Estructura del Pagina 
 
 ```text
  public/            # Assets estáticos (decoradores, images, logo, favicon)
